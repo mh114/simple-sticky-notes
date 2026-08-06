@@ -5,8 +5,8 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QEvent, QSettings
 from PySide6.QtGui import QColor, QCloseEvent
 
-from ellipsis_label import EllipsisLabel
-from note_editor import NoteEditor
+from components.ellipsis_label import EllipsisLabel
+from components.note_editor import NoteEditor
 
 SHADOW_COLOR = QColor(0, 0, 0, 50)
 SHADOW_COLOR_FOCUSED = QColor(0, 0, 0, 100)

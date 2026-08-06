@@ -9,7 +9,7 @@ from PySide6.QtCore import QSettings
 from PySide6.QtGui import QIcon, QFont, QFontDatabase
 from PySide6.QtDBus import QDBusInterface, QDBusConnection
 
-from sticky_note import StickyNote
+from components.sticky_note import StickyNote
 
 APP_NAME = "simple-sticky-notes"
 APP_ORG = "MHGames"
