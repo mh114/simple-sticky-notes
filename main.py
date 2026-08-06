@@ -12,6 +12,9 @@ from PySide6.QtCore import Qt, QPoint, QEvent, QTimer, QSettings
 from PySide6.QtGui import QIcon, QColor, QCursor, QTextCursor, QFont, QFontDatabase
 from PySide6.QtDBus import QDBusInterface, QDBusConnection, QDBusMessage
 
+from ellipsis_label import EllipsisLabel
+
+
 APP_NAME = "simple-sticky-notes"
 APP_ORG = "MHGames"
 RESIZE_MARGIN = 24
@@ -79,8 +82,8 @@ class StickyNote(QWidget):
 		header_layout = QHBoxLayout(self.header)
 		header_layout.setContentsMargins(2, 2, 8, 2)
 
-		# Title label
-		self.title = QLabel(title, self.header)
+		# Title label (uses ellipsis)
+		self.title = EllipsisLabel(title, self.header)
 		self.title.setStyleSheet("color: #a0000000; border: none; background: transparent;")
 
 		# Stacked title editor
@@ -192,9 +195,9 @@ class StickyNote(QWidget):
 					self.windowHandle().startSystemMove()
 					return True
 
-		# Double-click header/title to edit the title text
+		# Double-click title to edit the title text
 		elif event.type() == QEvent.Type.MouseButtonDblClick:
-			if event.button() == Qt.MouseButton.LeftButton and watched in (self.title, self.header):
+			if event.button() == Qt.MouseButton.LeftButton and watched == self.title:
 				title = self.title.text()
 				self.editing_title = True
 				self.title_editor.setText(title)
@@ -225,7 +228,6 @@ class StickyNote(QWidget):
 
 
 	def load(self, settings: QSettings):
-		self.title.setText(settings.value("title"))
 		geometry = settings.value("geometry")
 		if geometry:
 			self.restoreGeometry(geometry)
@@ -334,7 +336,8 @@ class StickyManager:
 		for i in range(num_notes):
 			self.settings.setArrayIndex(i)
 			text = self.settings.value("text")
-			note = StickyNote(text = text, app = self)
+			title = self.settings.value("title")
+			note = StickyNote(text = text, title = title, app = self)
 			note.load(self.settings)
 
 			note.show()
