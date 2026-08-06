@@ -40,27 +40,48 @@ class StickyNote(QWidget):
 		self.container.setObjectName("container")
 		self.container.setStyleSheet("""
 			QWidget#container {
-				background-color: #fff9c4;
-				border: 1px solid #e0d88e;
-				border-radius: 3px;
+				background-color: #ffe680;
+				border: 1px solid #d4b537;
+				border-radius: 4px;
+			}
+
+			QTextEdit, QWidget#footer {
+				background-color: #50ffffff;
+				color: #bf000000;
+				border: none;
+			}
+
+			QWidget#header {
+				background: transparent;
+			}
+
+			QWidget#header QLabel, QWidget#header QLineEdit {
+				font-weight: 600;
+				padding: 3px 0px 3px 0px;
+			}
+
+			QWidget#header QLineEdit {
+				background: #50ffffff;
+				color: black;
 			}
 		""")
 		layout.addWidget(self.container)
 		inner_layout = QVBoxLayout(self.container)
-		inner_layout.setContentsMargins(3, 3, 3, 3)
+		inner_layout.setContentsMargins(1, 1, 1, 1)
 		inner_layout.setSpacing(0)
 
 		# Header has title label + stacked title editor and a delete-button
 		self.header = QWidget(self.container)
 		self.header.setObjectName("header")
-		self.header.setMaximumHeight(32)
-		self.header.setStyleSheet("QWidget#header { background-color: #10000000; border: none; border-radius: 3px; }")
+		self.header.setMinimumHeight(36)
+		self.header.setMaximumHeight(36)
+		#self.header.setStyleSheet("QWidget#header { background: transparent; border: none; border-radius: 0px; }")
 		header_layout = QHBoxLayout(self.header)
-		header_layout.setContentsMargins(6, 2, 4, 2)
+		header_layout.setContentsMargins(2, 2, 8, 2)
 
 		# Title label
 		self.title = QLabel(title, self.header)
-		self.title.setStyleSheet("color: #cc000000; font-weight: bold; border: none; background: transparent;")
+		self.title.setStyleSheet("color: #a0000000; border: none; background: transparent;")
 
 		# Stacked title editor
 		self.title_editor = QLineEdit(title, self.header)
@@ -77,26 +98,28 @@ class StickyNote(QWidget):
 		delete_button = QPushButton("×", self.header)
 		#delete_button.setFixedSize(16, 16)
 		delete_button.setStyleSheet("QPushButton { color: #cc000000; border: none; background: transparent; font-weight: bold; } QPushButton:hover { color: red; }")
-		delete_button.setToolTip("Delete the note <b>(no undo!)</b>")
+		delete_button.setToolTip("Delete the note<br><small><b>(no undo!)</b></small>")
 		delete_button.clicked.connect(self.close)
 
+		# Header layout
 		header_layout.addWidget(self.title_stack)
-		header_layout.addStretch()
+		#header_layout.addStretch()
 		header_layout.addWidget(delete_button)
 
 		# Main note text editor
 		self.editor = QTextEdit(self.container)
 		self.editor.setPlainText(text)
-		self.editor.setStyleSheet("""
-			QTextEdit {
-				background-color: transparent;
-				color: #2c2c2c;
-				border: none;
-			}
-		""")
+		#self.editor.setStyleSheet("""
+		#	QTextEdit {
+		#		background-color: #50ffffff;
+		#		color: #2c2c2c;
+		#		border: none;
+		#	}
+		#""")
 
 		# Footer has grip handle for resizing the note
 		self.footer = QWidget(self.container)
+		self.footer.setObjectName("footer")
 		size_grip = QSizeGrip(self.footer)
 		footer_layout = QHBoxLayout(self.footer)
 		footer_layout.setContentsMargins(0, 0, 2, 2)
@@ -128,7 +151,6 @@ class StickyNote(QWidget):
 			return
 		self.title.setText(self.title_editor.text())
 		self.title_stack.setCurrentWidget(self.title)
-		print("FINISHED title edit")
 
 
 	def send_to_front(self):
@@ -138,16 +160,28 @@ class StickyNote(QWidget):
 		self.raise_()
 		if self.app:
 			self.app.note_was_sent_to_front(self)
-		print("Raising " + str(self))
+
 
 	def closeEvent(self, event: QCloseEvent):
-		print("closing note...")
-		if self.app:
+		# Confirm closing the note (also deletes it), unless we're quitting the app
+		if self.app and not self.app.is_quitting:
+			title = self.title.text()
+			if title:
+				title = f" titled <b>\"{title}\"</b>.."
+			reply = QMessageBox.question(self,
+					"Delete note?",
+					f"Are you sure you want to delete note{title}?",
+					QMessageBox.Yes | QMessageBox.No,
+					QMessageBox.No)
+			if reply == QMessageBox.No:
+				event.ignore()
+				return
+
 			self.app.delete_note(self)
 		super().closeEvent(event)
 
 
-	def eventFilter(self, watched, event) -> bool:
+	def eventFilter(self, watched, event: QEvent) -> bool:
 		if event.type() == QEvent.Type.MouseButtonPress:
 			# Send the note to front upon clicking anywhere
 			self.send_to_front()
@@ -189,11 +223,13 @@ class StickyNote(QWidget):
 		settings.setValue("text", self.editor.toPlainText())
 		settings.setValue("title", self.title.text())
 
+
 	def load(self, settings: QSettings):
 		self.title.setText(settings.value("title"))
 		geometry = settings.value("geometry")
 		if geometry:
 			self.restoreGeometry(geometry)
+
 
 
 class StickyManager:
@@ -221,19 +257,20 @@ class StickyManager:
 
 		self.notes = []
 		self.are_notes_visible = True
+		self.is_quitting = False
 
-		# Setup System Tray
+		# Setup tray icon
 		self.tray = QSystemTrayIcon(QIcon.fromTheme("note-new"))
 		self.tray.setToolTip("(Simple) Sticky Notes")
 
-		# Tray Context Menu
+		# Tray context menu
 		menu = QMenu()
 		menu.addAction("New Note", self.create_note)
 		menu.addSeparator()
 		menu.addAction("Quit", self.quit_app)
 		self.tray.setContextMenu(menu)
 
-		# Single click toggles all notes
+		# Single click on tray icon toggles all notes
 		self.tray.activated.connect(self.on_tray_activated)
 		self.tray.show()
 
@@ -242,9 +279,11 @@ class StickyManager:
 		if not self.notes:
 			self.create_note()
 
+
 	def on_tray_activated(self, reason):
 		if reason == QSystemTrayIcon.ActivationReason.Trigger:  # Left click
 			self.toggle_notes()
+
 
 	def toggle_notes(self):
 		self.are_notes_visible = not self.are_notes_visible
@@ -261,18 +300,24 @@ class StickyManager:
 		note.show()
 		self.notes.append(note)
 
+
 	def delete_note(self, note: StickyNote):
+		# TODO: Perhaps should keep the last deleted note saved and allow undeleting it
 		if note in self.notes:
 			self.notes.remove(note)
 			note.close()
 			print("Deleted " + str(note))
 
+
 	def run(self):
 		sys.exit(self.app.exec())
 
+
 	def quit_app(self):
+		self.is_quitting = True
 		self.save_notes()
 		self.app.quit()
+
 
 	def save_notes(self):
 		# FIXME: Should clear the settings, otherwise old notes are left lingering
@@ -282,6 +327,7 @@ class StickyManager:
 			note.save(self.settings)
 		self.settings.endArray()
 		self.settings.sync()
+
 
 	def load_notes(self):
 		num_notes = self.settings.beginReadArray("notes")
@@ -296,13 +342,17 @@ class StickyManager:
 
 		self.settings.endArray()
 
+
 	def note_was_sent_to_front(self, note: StickyNote):
 		if note not in self.notes:
-			print("ERROR: Note not managed?")
+			print("ERROR: Note not managed!?")
 			return
+
 		# Set the topmost note to be last on the stack, so order remains when restoring
-		self.notes.remove(note)
-		self.notes.append(note)
+		if self.notes and self.notes[-1] != note:
+			self.notes.remove(note)
+			self.notes.append(note)
+
 
 	def register_kwin_rules(self):
 		bus = QDBusConnection.sessionBus()
@@ -321,6 +371,7 @@ class StickyManager:
 				print(f"Added window rules")
 			else:
 				print("Need to add window rule manually!")
+
 
 
 if __name__ == "__main__":
