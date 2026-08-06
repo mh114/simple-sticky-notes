@@ -5,7 +5,7 @@ import sys
 os.environ["QT_QPA_PLATFORM"] = "xcb"
 
 from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMessageBox
-from PySide6.QtCore import Qt, QSettings
+from PySide6.QtCore import QSettings
 from PySide6.QtGui import QIcon, QFont, QFontDatabase
 from PySide6.QtDBus import QDBusInterface, QDBusConnection
 
@@ -36,9 +36,10 @@ class SimpleStickyNotes:
 		#app_font.setPixelSize(16)
 		self.app.setFont(app_font)
 
+		# TODO: Use proper organization and app names
 		self.settings = QSettings(QSettings.Format.IniFormat, QSettings.Scope.UserScope, "SimpleStickyNotes", "notes")
 
-		self.notes = []
+		self.notes: list[StickyNote] = []
 		self.are_notes_visible = True
 		self.is_quitting = False
 
@@ -107,19 +108,20 @@ class SimpleStickyNotes:
 		self.settings.beginWriteArray("notes")
 		for i, note in enumerate(self.notes):
 			self.settings.setArrayIndex(i)
-			note.save(self.settings)
+			note.save_note_to(self.settings)
 		self.settings.endArray()
 		self.settings.sync()
 
 
 	def load_notes(self):
+		assert(len(self.notes) <= 0)
 		num_notes = self.settings.beginReadArray("notes")
 		for i in range(num_notes):
 			self.settings.setArrayIndex(i)
 			text = self.settings.value("text")
 			title = self.settings.value("title")
 			note = StickyNote(text = text, title = title, app = self)
-			note.load(self.settings)
+			note.load_note_from(self.settings)
 
 			note.show()
 			self.notes.append(note)

@@ -1,18 +1,19 @@
 from PySide6.QtWidgets import (
-	QWidget, QLabel, QPushButton, QLineEdit, QTextEdit, QVBoxLayout, QHBoxLayout,
+	QWidget, QPushButton, QLineEdit, QTextEdit, QVBoxLayout, QHBoxLayout,
 	QMessageBox, QGraphicsDropShadowEffect, QSizeGrip, QStackedWidget
 )
-from PySide6.QtCore import Qt, QPoint, QEvent, QSettings
-from PySide6.QtGui import QColor
+from PySide6.QtCore import Qt, QEvent, QSettings
+from PySide6.QtGui import QColor, QCloseEvent
 
 from ellipsis_label import EllipsisLabel
+from note_editor import NoteEditor
 
 SHADOW_COLOR = QColor(0, 0, 0, 50)
 SHADOW_COLOR_FOCUSED = QColor(0, 0, 0, 100)
 
 
 class StickyNote(QWidget):
-	def __init__(self, parent = None, text = "New Note", title = "Note", app: SimpleStickyNotes = None):
+	def __init__(self, parent = None, text = "New Note", title = "Note", app: SimpleStickyNotes = None): # type: ignore
 		super().__init__(parent)
 		self.app = app
 		self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Dialog)
@@ -98,15 +99,7 @@ class StickyNote(QWidget):
 		header_layout.addWidget(delete_button)
 
 		# Main note text editor
-		self.editor = QTextEdit(self.container)
-		self.editor.setPlainText(text)
-		#self.editor.setStyleSheet("""
-		#	QTextEdit {
-		#		background-color: #50ffffff;
-		#		color: #2c2c2c;
-		#		border: none;
-		#	}
-		#""")
+		self.editor = NoteEditor(text, self.container) # QTextEdit(self.container)
 
 		# Footer has grip handle for resizing the note
 		self.footer = QWidget(self.container)
@@ -209,13 +202,14 @@ class StickyNote(QWidget):
 		return super().eventFilter(watched, event)
 
 
-	def save(self, settings: QSettings):
+	def save_note_to(self, settings: QSettings):
 		settings.setValue("geometry", self.saveGeometry())
-		settings.setValue("text", self.editor.toPlainText())
+		settings.setValue("text", self.editor.get_rich_text())
 		settings.setValue("title", self.title.text())
+		print("text: " + self.editor.get_rich_text())
 
 
-	def load(self, settings: QSettings):
+	def load_note_from(self, settings: QSettings):
 		geometry = settings.value("geometry")
 		if geometry:
 			self.restoreGeometry(geometry)
