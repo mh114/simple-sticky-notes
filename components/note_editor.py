@@ -14,7 +14,7 @@ class NoteEditor(QTextEdit):
 	def get_rich_text(self) -> str:
 		"""
 		Returns custom very simplified HTML-output from the note editor. Only supports
-		bold, italic, strike-through tags and new lines.
+		bold, italic, underline & strike-through tags and new lines.
 		"""
 		doc = self.document()
 		html_buf: list[str] = []
@@ -42,6 +42,8 @@ class NoteEditor(QTextEdit):
 						text = f"<b>{text}</b>"
 					if format.fontItalic():
 						text = f"<i>{text}</i>"
+					if format.fontUnderline():
+						text = f"<u>{text}</u>"
 					if format.fontStrikeOut():
 						text = f"<s>{text}</s>"
 
@@ -68,27 +70,28 @@ class NoteEditor(QTextEdit):
 		key = event.key()
 
 		# Handle rich text shortcuts
-		# CTRL-B, CTRL-I
+		# CTRL-B, CTRL-I, CTRL-U
 		if modifiers == Qt.KeyboardModifier.ControlModifier:
 			match key:
 				case Qt.Key.Key_B:
 					self.toggle_bold()
-					return
 
 				case Qt.Key.Key_I:
 					self.toggle_italic()
-					return
+
+				case Qt.Key.Key_U:
+					self.toggle_underline()
+			return
 
 		# SHIFT-CTRL-X = strikethrough, -F = clear formatting
 		if modifiers == (Qt.KeyboardModifier.ControlModifier | Qt.KeyboardModifier.ShiftModifier):
 			match key:
 				case Qt.Key.Key_X:
 					self.toggle_strikethrough()
-					return
 
 				case Qt.Key.Key_F:
 					self.clear_formatting()
-					return
+			return
 
 		return super().keyPressEvent(event)
 
@@ -108,6 +111,12 @@ class NoteEditor(QTextEdit):
 		self.apply_format(format)
 
 
+	def toggle_underline(self):
+		format = QTextCharFormat()
+		format.setFontUnderline(not self.currentCharFormat().fontUnderline())
+		self.apply_format(format)
+
+
 	def toggle_strikethrough(self):
 		format = QTextCharFormat()
 		format.setFontStrikeOut(not self.currentCharFormat().fontStrikeOut())
@@ -118,6 +127,7 @@ class NoteEditor(QTextEdit):
 		format = QTextCharFormat()
 		format.setFontWeight(QFont.Weight.Normal)
 		format.setFontItalic(False)
+		format.setFontUnderline(False)
 		format.setFontStrikeOut(False)
 		self.apply_format(format)
 

@@ -69,7 +69,7 @@ class StickyNote(QWidget):
 		self.header.setMaximumHeight(36)
 		#self.header.setStyleSheet("QWidget#header { background: transparent; border: none; border-radius: 0px; }")
 		header_layout = QHBoxLayout(self.header)
-		header_layout.setContentsMargins(2, 2, 8, 2)
+		header_layout.setContentsMargins(4, 2, 8, 2)
 
 		# Title label (uses ellipsis)
 		self.title = EllipsisLabel(title, self.header)
