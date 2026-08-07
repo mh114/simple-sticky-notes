@@ -19,7 +19,7 @@ class ColorPickerMenu(QMenu):
 		self.setStyleSheet("background-color: rgba(128, 128, 128, 0.6); border: 1px solid gray; border-radius: 8px;")
 
 		# Rainbow of colors
-		colors: list[QColor] = [ColorPickerMenu.get_color_from_index(i) for i in range(NUM_COLORS)]
+		colors: list[QColor] = [ColorPickerMenu.get_color_for_index(i) for i in range(NUM_COLORS)]
 
 		# Grid layout of color buttons
 		grid = QWidget(self)
@@ -67,7 +67,7 @@ class ColorPickerMenu(QMenu):
 		return QColor.fromHsvF(hue, 0.55, 0.975)
 
 
-	def get_color_from_index(index: int) -> QColor:
+	def get_color_for_index(index: int) -> QColor:
 		return ColorPickerMenu._color_from_hue(HUE_STEP * index)
 
 

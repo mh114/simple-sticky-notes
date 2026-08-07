@@ -173,8 +173,8 @@ class StickyNote(QWidget):
 		darker = color.darker(125)
 		self.setStyleSheet(f"""
 			QWidget#container {{
-				background-color: {color.name(QColor.NameFormat.HexRgb)}; /* #ffe680 */
-				border: 1px solid {darker.name(QColor.NameFormat.HexRgb)}; /* #d4b537 */
+				background-color: {color.name(QColor.NameFormat.HexRgb)};
+				border: 1px solid {darker.name(QColor.NameFormat.HexRgb)};
 				border-radius: 4px;
 			}}
 		""")
@@ -193,7 +193,7 @@ class StickyNote(QWidget):
 		self.activateWindow()
 		self.raise_()
 		if self.app:
-			print("sending to front: " + self.title.text())
+			#print("sending to front: " + self.title.text())
 			self.app.on_note_sent_to_front(self)
 
 
@@ -264,6 +264,7 @@ class StickyNote(QWidget):
 			"y": geom.y(),
 			"w": geom.width(),
 			"h": geom.height(),
+			"color": self.color_index,
 		}
 		return data
 
@@ -276,9 +277,14 @@ class StickyNote(QWidget):
 		h = int(data["h"])
 		text = str(data["text"])
 		title = str(data["title"])
+		color_index = int(data.get("color", -1))
 
 		note = cls(text = text, title = title, app = app)
 		note.move(x, y)
 		note.resize(w, h)
+
+		if color_index >= 0:
+			note.change_color(ColorPickerMenu.get_color_for_index(color_index), color_index)
+
 		return note
 		
