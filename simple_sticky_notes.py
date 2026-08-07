@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 
@@ -5,25 +6,30 @@ import sys
 os.environ["QT_QPA_PLATFORM"] = "xcb"
 
 from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMessageBox
-from PySide6.QtCore import QSettings
+from PySide6.QtCore import QSettings, QStandardPaths
 from PySide6.QtGui import QIcon, QFont, QFontDatabase
 from PySide6.QtDBus import QDBusInterface, QDBusConnection
 
 from components.sticky_note import StickyNote
 
-APP_NAME = "simple-sticky-notes"
+APP_NAME_PATH = "simple-sticky-notes"
+APP_NAME = "SimpleStickyNotes"
 APP_ORG = "MHGames"
+NOTES_FILENAME = "notes.json"
 
-""" Main application class """
+
 class SimpleStickyNotes:
+	""" Main application class """
+
 	def __init__(self):
 		self.app = QApplication(sys.argv)
 		#self.register_kwin_rules()
 
 		# TODO: Offer to import from Linux Mint Sticky notes on 1st startup
 
-		self.app.setDesktopFileName(APP_NAME)
-		self.app.setApplicationName(APP_NAME)
+		self.app.setDesktopFileName(APP_NAME_PATH)
+		self.app.setApplicationName(APP_NAME_PATH)
+		self.app.setOrganizationName(APP_ORG)
 		self.app.setQuitOnLastWindowClosed(False)
 
 		# Font with emoji fallbacks
@@ -45,7 +51,7 @@ class SimpleStickyNotes:
 
 		# Setup tray icon
 		self.tray = QSystemTrayIcon(QIcon.fromTheme("note-new"))
-		self.tray.setToolTip("(Simple) Sticky Notes")
+		self.tray.setToolTip(APP_NAME)
 
 		# Tray context menu
 		menu = QMenu()
@@ -110,33 +116,44 @@ class SimpleStickyNotes:
 
 
 	def save_notes(self):
-		# TODO: Maybe use JSON instead, INI-format is fine for app config, but for this type of data I'd prefer something else..
-		self.settings.remove("notes") # Clear existing, otherwise deleted notes will leave cruft behind
-		self.settings.beginWriteArray("notes")
+		# Serialize notes to JSON
+		config_dir = os.path.join(QStandardPaths.writableLocation(QStandardPaths.ConfigLocation), APP_NAME_PATH)
+		notes_data = []
 		for i, note in enumerate(self.notes):
-			self.settings.setArrayIndex(i)
-			note.save_note_to(self.settings)
-		self.settings.endArray()
-		self.settings.sync()
+			n_data = note.serialize()
+			n_data["i"] = i # Store the index just in case, although Python should preserve order
+			notes_data.append(n_data)
+
+		notes_file = os.path.join(config_dir, NOTES_FILENAME)
+		os.makedirs(config_dir, exist_ok=True)
+		with open(notes_file, "wt", encoding="utf-8") as f:
+			json.dump({ "notes": notes_data }, f, indent=4, ensure_ascii=False)
+			print("Notes saved to: " + notes_file)
 
 
 	def load_notes(self):
 		assert(len(self.notes) <= 0)
-		num_notes = self.settings.beginReadArray("notes")
-		for i in range(num_notes):
-			self.settings.setArrayIndex(i)
-			text = self.settings.value("text")
-			title = self.settings.value("title")
-			note = StickyNote(text = text, title = title, app = self)
-			note.load_note_from(self.settings)
 
-			note.show()
-			self.notes.append(note)
+		# Load notes from JSON
+		notes_file = os.path.join(QStandardPaths.writableLocation(QStandardPaths.ConfigLocation), APP_NAME_PATH, NOTES_FILENAME)
+		try:
+			with open(notes_file, "rt", encoding="utf-8") as f:
+				print("Loading notes from: " + notes_file)
+				notes_data = json.load(f)["notes"]
+				for note_data in notes_data:
+					note = StickyNote.deserialize(note_data, app=self)
+					note.show()
+					self.notes.append(note)
+					print(f"- Loaded note #{note_data["i"]} titled '{note_data["title"]}'")
+				
+		except FileNotFoundError:
+			return
+		except BaseException as err:
+			print(f"ERROR: Failed to load notes from {notes_file}, error: {err}")
+			return
 
-		self.settings.endArray()
 
-
-	def note_was_sent_to_front(self, note: StickyNote):
+	def on_note_sent_to_front(self, note: StickyNote):
 		if note not in self.notes:
 			print("ERROR: Note not managed!?")
 			return

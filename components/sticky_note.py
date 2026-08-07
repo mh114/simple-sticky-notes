@@ -133,6 +133,7 @@ class StickyNote(QWidget):
 
 		# Monitor events on these widgets
 		self.header.installEventFilter(self)
+		self.editor.viewport().installEventFilter(self)
 		self.editor.installEventFilter(self)
 		self.title.installEventFilter(self)
 		self.title_editor.installEventFilter(self)
@@ -158,7 +159,8 @@ class StickyNote(QWidget):
 		self.activateWindow()
 		self.raise_()
 		if self.app:
-			self.app.note_was_sent_to_front(self)
+			print("sending to front: " + self.title.text())
+			self.app.on_note_sent_to_front(self)
 
 
 	def closeEvent(self, event: QCloseEvent):
@@ -219,25 +221,30 @@ class StickyNote(QWidget):
 		return super().eventFilter(watched, event)
 
 
-	def save_note_to(self, settings: QSettings):
-		# NOTE: Save x,y coords along with geometry, because using save/restoreGeometry() doesn't work for Y < 25 for some reason.. :P
-		# TODO: Maybe just save w,h as well and don't bother with save/restoreGeometry()?
+	def serialize(self) -> dict[str, int|str]:
 		geom = self.geometry()
-		settings.setValue("geometry", self.saveGeometry())
-		settings.setValue("text", self.editor.get_rich_text())
-		settings.setValue("title", self.title.text())
-		settings.setValue("x", geom.x())
-		settings.setValue("y", geom.y())
-		# TODO: Remove output
-		print("text: " + self.editor.get_rich_text() + "\nx:" + str(geom.x()) + " y:" + str(geom.y()))
+		data: dict[str, int|str] = {
+			"text": self.editor.get_rich_text(),
+			"title": self.title.text(),
+			"x": geom.x(),
+			"y": geom.y(),
+			"w": geom.width(),
+			"h": geom.height(),
+		}
+		return data
 
 
-	def load_note_from(self, settings: QSettings):
-		geometry = settings.value("geometry")
-		if geometry:
-			self.restoreGeometry(geometry)
-		x = int(settings.value("x", -1))
-		y = int(settings.value("y", -1))
-		if x >= 0 and y >= 0:
-			self.move(x, y)
+	@classmethod
+	def deserialize(cls, data: dict[str, int|str], app: SimpleStickyNotes) -> StickyNote: # type: ignore
+		x = int(data["x"])
+		y = int(data["y"])
+		w = int(data["w"])
+		h = int(data["h"])
+		text = str(data["text"])
+		title = str(data["title"])
 
+		note = cls(text = text, title = title, app = app)
+		note.move(x, y)
+		note.resize(w, h)
+		return note
+		
