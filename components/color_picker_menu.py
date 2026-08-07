@@ -3,8 +3,14 @@ from PySide6.QtGui import QColor, Qt
 from PySide6.QtCore import Signal
 
 NUM_COLORS = 16
+HUE_STEP = 1.0 / NUM_COLORS
+
 
 class ColorPickerMenu(QMenu):
+	"""
+	Shows a grid of color squares to choose from. Colors are created dynamically
+	from a rainbow of colors (hue variation).
+	"""
 	color_picked = Signal(QColor, int)
 
 	def __init__(self, columns=4, parent=None):
@@ -13,11 +19,7 @@ class ColorPickerMenu(QMenu):
 		self.setStyleSheet("background-color: rgba(128, 128, 128, 0.6); border: 1px solid gray; border-radius: 8px;")
 
 		# Rainbow of colors
-		colors: list[QColor] = []
-		hue_step = 1.0 / float(NUM_COLORS)
-		for i in range(NUM_COLORS):
-			col = ColorPickerMenu._color_from_hue(i * hue_step)
-			colors.append(col)
+		colors: list[QColor] = [ColorPickerMenu.get_color_from_index(i) for i in range(NUM_COLORS)]
 
 		# Grid layout of color buttons
 		grid = QWidget(self)
@@ -46,7 +48,7 @@ class ColorPickerMenu(QMenu):
 			column = i % columns
 			grid_layout.addWidget(button, row, column)
 
-			# Wire the click handler that sends the signal, capturing current color for the lambda
+			# Wire the click handler that sends the signal, capturing current color & index for the lambda
 			button.clicked.connect(lambda _, col=color, index=i: self._on_color_clicked(col, index))
 
 
@@ -62,14 +64,12 @@ class ColorPickerMenu(QMenu):
 
 
 	def _color_from_hue(hue: float) -> QColor:
-		return QColor.fromHsvF(hue, 0.55, 0.95)
+		return QColor.fromHsvF(hue, 0.55, 0.975)
 
 
 	def get_color_from_index(index: int) -> QColor:
-		hue_step = 1.0 / float(NUM_COLORS)
-		return ColorPickerMenu._color_from_hue(hue_step * index)
+		return ColorPickerMenu._color_from_hue(HUE_STEP * index)
 
 
 	def default_color() -> tuple[QColor, int]:
-		hue_step = 1.0 / float(NUM_COLORS)
-		return (ColorPickerMenu._color_from_hue(hue_step * 2), 2)
+		return (ColorPickerMenu._color_from_hue(HUE_STEP * 2), 2)
