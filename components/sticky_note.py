@@ -1,10 +1,11 @@
 from PySide6.QtWidgets import (
-	QWidget, QPushButton, QLineEdit, QTextEdit, QVBoxLayout, QHBoxLayout,
+	QToolButton, QWidget, QPushButton, QLineEdit, QVBoxLayout, QHBoxLayout,
 	QMessageBox, QGraphicsDropShadowEffect, QSizeGrip, QStackedWidget
 )
-from PySide6.QtCore import Qt, QEvent, QSettings
-from PySide6.QtGui import QColor, QCloseEvent
+from PySide6.QtCore import Qt, QEvent
+from PySide6.QtGui import QColor, QCloseEvent, QIcon
 
+from components.color_picker_menu import ColorPickerMenu
 from components.ellipsis_label import EllipsisLabel
 from components.note_editor import NoteEditor
 
@@ -26,15 +27,11 @@ class StickyNote(QWidget):
 		layout.setContentsMargins(5, 5, 12, 12)
 		#layout.setSpacing(0)
 
+		self.change_color(*ColorPickerMenu.default_color())
+
 		self.container = QWidget(self)
 		self.container.setObjectName("container")
 		self.container.setStyleSheet("""
-			QWidget#container {
-				background-color: #ffe680;
-				border: 1px solid #d4b537;
-				border-radius: 4px;
-			}
-
 			QTextEdit, QWidget#footer {
 				background-color: #50ffffff;
 				color: #bf000000;
@@ -77,7 +74,7 @@ class StickyNote(QWidget):
 		inner_layout.setContentsMargins(1, 1, 1, 1)
 		inner_layout.setSpacing(0)
 
-		# Header has title label + stacked title editor and a delete-button
+		# Header has title label + stacked title editor and a delete-button + color picker button
 		self.header = QWidget(self.container)
 		self.header.setObjectName("header")
 		self.header.setMinimumHeight(36)
@@ -101,6 +98,29 @@ class StickyNote(QWidget):
 		self.title_stack.addWidget(self.title)
 		self.title_stack.addWidget(self.title_editor)
 
+		# Color picker -button
+		color_button = QToolButton(self.header, popupMode=QToolButton.ToolButtonPopupMode.InstantPopup)
+		color_button.setToolTip("Change note color")
+		color_button.setIcon(QIcon.fromTheme("draw-brush", QIcon.fromTheme("format-fill-color")))
+		color_button.setFixedSize(24, 24)
+		color_menu = ColorPickerMenu(parent = color_button)
+		color_menu.color_picked.connect(self.change_color)
+		color_button.setMenu(color_menu)
+		color_button.setStyleSheet("""
+			QToolButton {
+				border: none;
+				background: transparent;
+				padding: 2px;
+				border-radius: 3px;
+			}
+			QToolButton:hover {
+				background-color: rgba(0, 0, 0, 0.2);
+			}
+			QToolButton::menu-indicator {
+				image: none;
+			}
+		""")
+
 		# Delete-button
 		delete_button = QPushButton("×", self.header)
 		delete_button.setObjectName("deleteButton")
@@ -111,6 +131,7 @@ class StickyNote(QWidget):
 		# Header layout
 		header_layout.addWidget(self.title_stack)
 		#header_layout.addStretch()
+		header_layout.addWidget(color_button)
 		header_layout.addWidget(delete_button)
 
 		# Main note text editor
@@ -144,6 +165,19 @@ class StickyNote(QWidget):
 		self.shadow.setOffset(5, 5)
 		self.shadow.setColor(SHADOW_COLOR)
 		self.container.setGraphicsEffect(self.shadow)
+
+
+	def change_color(self, color: QColor, index: int = -1):
+		print("color: " + color.name() + ", index: " + str(index))
+		self.color_index = index
+		darker = color.darker(125)
+		self.setStyleSheet(f"""
+			QWidget#container {{
+				background-color: {color.name(QColor.NameFormat.HexRgb)}; /* #ffe680 */
+				border: 1px solid {darker.name(QColor.NameFormat.HexRgb)}; /* #d4b537 */
+				border-radius: 4px;
+			}}
+		""")
 
 
 	def on_title_edit_finished(self):
