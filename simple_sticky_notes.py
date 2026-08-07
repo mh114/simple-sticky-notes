@@ -104,6 +104,7 @@ class SimpleStickyNotes:
 
 
 	def save_notes(self):
+		# TODO: Maybe use JSON instead, INI-format is fine for app config, but for this type of data I'd prefer something else..
 		self.settings.remove("notes") # Clear existing, otherwise deleted notes will leave cruft behind
 		self.settings.beginWriteArray("notes")
 		for i, note in enumerate(self.notes):

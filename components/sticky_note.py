@@ -54,6 +54,23 @@ class StickyNote(QWidget):
 				background: #50ffffff;
 				color: black;
 			}
+
+			QLabel#title {
+				color: #a0000000;
+				border: none;
+				background: transparent;
+			}
+
+			QPushButton#deleteButton {
+				color: #cc000000;
+				border: none;
+				background: transparent;
+				font-weight: bold;
+			}
+			QPushButton#deleteButton:hover {
+				color: red;
+				font-size: 16pt;
+			}
 		""")
 		layout.addWidget(self.container)
 		inner_layout = QVBoxLayout(self.container)
@@ -67,11 +84,11 @@ class StickyNote(QWidget):
 		self.header.setMaximumHeight(36)
 		#self.header.setStyleSheet("QWidget#header { background: transparent; border: none; border-radius: 0px; }")
 		header_layout = QHBoxLayout(self.header)
-		header_layout.setContentsMargins(4, 2, 8, 2)
+		header_layout.setContentsMargins(4, 2, 6, 2)
 
 		# Title label (uses ellipsis)
 		self.title = EllipsisLabel(title, self.header)
-		self.title.setStyleSheet("color: #a0000000; border: none; background: transparent;")
+		self.title.setObjectName("title")
 
 		# Stacked title editor
 		self.title_editor = QLineEdit(title, self.header)
@@ -86,8 +103,8 @@ class StickyNote(QWidget):
 
 		# Delete-button
 		delete_button = QPushButton("×", self.header)
-		#delete_button.setFixedSize(16, 16)
-		delete_button.setStyleSheet("QPushButton { color: #cc000000; border: none; background: transparent; font-weight: bold; } QPushButton:hover { color: red; }")
+		delete_button.setObjectName("deleteButton")
+		delete_button.setFixedSize(20, 20)
 		delete_button.setToolTip("Delete the note<br><small><b>(no undo!)</b></small>")
 		delete_button.clicked.connect(self.close)
 
@@ -116,7 +133,7 @@ class StickyNote(QWidget):
 
 		# Monitor events on these widgets
 		self.header.installEventFilter(self)
-		self.editor.viewport().installEventFilter(self)
+		self.editor.installEventFilter(self)
 		self.title.installEventFilter(self)
 		self.title_editor.installEventFilter(self)
 
@@ -189,6 +206,8 @@ class StickyNote(QWidget):
 			if watched == self.title_editor and self.editing_title:
 				self.title_editor.editingFinished.emit()
 				return True
+			elif watched == self.editor:
+				self.editor.clear_selection()
 
 		# ..but cancel when pressing ESC
 		elif event.type() == QEvent.Type.KeyPress and event.key() == Qt.Key.Key_Escape:

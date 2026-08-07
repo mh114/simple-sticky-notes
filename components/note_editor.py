@@ -65,6 +65,12 @@ class NoteEditor(QTextEdit):
 		self.document().setHtml(text)
 
 
+	def clear_selection(self):
+		cursor = self.textCursor()
+		cursor.clearSelection()
+		self.setTextCursor(cursor)
+
+
 	def keyPressEvent(self, event: QEvent):
 		modifiers = event.modifiers()
 		key = event.key()
