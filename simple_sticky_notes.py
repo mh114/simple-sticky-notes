@@ -81,6 +81,12 @@ class SimpleStickyNotes:
 		if not self.are_notes_visible:
 			self.toggle_notes()
 
+		# Center on screen
+		screen_geom = QApplication.primaryScreen().availableGeometry()
+		note_geom = note.frameGeometry()
+		center = screen_geom.center()
+		note.move(center.x() - note_geom.width() / 2, center.y() - note_geom.height() / 2)
+
 		note.show()
 		self.notes.append(note)
 
