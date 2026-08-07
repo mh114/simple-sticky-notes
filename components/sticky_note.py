@@ -20,8 +20,6 @@ class StickyNote(QWidget):
 		self.setAttribute(Qt.WidgetAttribute.WA_MouseTracking, True)
 		self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
 		self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
-		#self.setAttribute(Qt.WidgetAttribute.WA_NativeWindow, True)
-		#self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating, True)
 
 		# Build the layout: main layout only has margins and a container layout, container has a drop-shadow
 		layout = QVBoxLayout(self)
@@ -203,14 +201,24 @@ class StickyNote(QWidget):
 
 
 	def save_note_to(self, settings: QSettings):
+		# NOTE: Save x,y coords along with geometry, because using save/restoreGeometry() doesn't work for Y < 25 for some reason.. :P
+		# TODO: Maybe just save w,h as well and don't bother with save/restoreGeometry()?
+		geom = self.geometry()
 		settings.setValue("geometry", self.saveGeometry())
 		settings.setValue("text", self.editor.get_rich_text())
 		settings.setValue("title", self.title.text())
-		print("text: " + self.editor.get_rich_text())
+		settings.setValue("x", geom.x())
+		settings.setValue("y", geom.y())
+		# TODO: Remove output
+		print("text: " + self.editor.get_rich_text() + "\nx:" + str(geom.x()) + " y:" + str(geom.y()))
 
 
 	def load_note_from(self, settings: QSettings):
 		geometry = settings.value("geometry")
 		if geometry:
 			self.restoreGeometry(geometry)
+		x = int(settings.value("x", -1))
+		y = int(settings.value("y", -1))
+		if x >= 0 and y >= 0:
+			self.move(x, y)
 

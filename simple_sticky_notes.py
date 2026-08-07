@@ -104,7 +104,7 @@ class SimpleStickyNotes:
 
 
 	def save_notes(self):
-		# FIXME: Should clear the settings, otherwise old notes are left lingering
+		self.settings.remove("notes") # Clear existing, otherwise deleted notes will leave cruft behind
 		self.settings.beginWriteArray("notes")
 		for i, note in enumerate(self.notes):
 			self.settings.setArrayIndex(i)
