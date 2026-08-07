@@ -7,6 +7,7 @@ from PySide6.QtCore import QEvent, Qt
 class NoteEditor(QTextEdit):
 	def __init__(self, text: str = "", parent = None):
 		super().__init__(parent)
+		self.setTabStopDistance(4 * 8)
 		if text:
 			self.set_rich_text(text)
 
@@ -14,7 +15,7 @@ class NoteEditor(QTextEdit):
 	def get_rich_text(self) -> str:
 		"""
 		Returns custom very simplified HTML-output from the note editor. Only supports
-		bold, italic, underline & strike-through tags and new lines.
+		bold, italic, underline & strike-through tags, new lines and tabs.
 		"""
 		doc = self.document()
 		html_buf: list[str] = []
@@ -62,6 +63,7 @@ class NoteEditor(QTextEdit):
 
 	def set_rich_text(self, text: str):
 		# We can just use the simplified HTML as is (unsafe obviously, but still)
+		text = f'<div style="white-space: pre-wrap;">{text}</div>' # Keep tabs \t
 		self.document().setHtml(text)
 
 
