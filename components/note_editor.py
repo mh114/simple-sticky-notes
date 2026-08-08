@@ -1,7 +1,7 @@
 import html
 
 from PySide6.QtWidgets import QApplication, QTextEdit
-from PySide6.QtGui import QTextCharFormat, QFont
+from PySide6.QtGui import QKeyEvent, QTextCharFormat, QFont, QWheelEvent
 from PySide6.QtCore import QEvent, Qt
 
 class NoteEditor(QTextEdit):
@@ -99,7 +99,21 @@ class NoteEditor(QTextEdit):
 		self.setTextCursor(cursor)
 
 
-	def keyPressEvent(self, event: QEvent):
+	def wheelEvent(self, event: QWheelEvent):
+		delta = event.angleDelta().y()
+		if delta and event.modifiers() == Qt.KeyboardModifier.ControlModifier:
+			# CTRL + mouse wheel zooming
+			if delta > 0:
+				self.zoom_in()
+			else:
+				self.zoom_out()
+			event.accept()
+			return
+
+		return super().wheelEvent(event)
+
+
+	def keyPressEvent(self, event: QKeyEvent):
 		modifiers = event.modifiers()
 		key = event.key()
 
@@ -118,7 +132,6 @@ class NoteEditor(QTextEdit):
 					return
 
 				# Zooming
-				# TODO: Allow mouse wheel zooming
 				case Qt.Key.Key_Plus:
 					self.zoom_in()
 					return
