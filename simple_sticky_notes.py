@@ -18,7 +18,7 @@ from components.notes_protocol import NotesProtocol
 APP_NAME_PATH = "simple-sticky-notes"
 APP_NAME = "SimpleStickyNotes"
 APP_DISPLAY_NAME = "(Simple) Sticky Notes"
-APP_DESCRIPTION = "A simple sticky notes application, nothing more."
+APP_DESCRIPTION = "A quite simple sticky notes application."
 APP_ORG = "MHGames"
 APP_VERSION = "0.1"
 NOTES_FILENAME = "notes.json"
