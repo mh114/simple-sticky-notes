@@ -9,7 +9,7 @@ from components.color_picker_menu import ColorPickerMenu
 from components.ellipsis_label import EllipsisLabel
 from components.icon_cache import IconCache
 from components.note_editor import NoteEditor
-from components.notes_interface import NotesInterface
+from components.notes_protocol import NotesProtocol
 
 SHADOW_COLOR = QColor(0, 0, 0, 50)
 SHADOW_COLOR_FOCUSED = QColor(0, 0, 0, 100)
@@ -18,7 +18,7 @@ ICON_OPACITY = 0.6
 TOOL_BUTTON_SIZE = QSize(28, 28)
 
 class StickyNote(QWidget):
-	def __init__(self, parent = None, text = "New Note", title = "Note", app: NotesInterface = None):
+	def __init__(self, parent = None, text = "New Note", title = "Note", app: NotesProtocol = None):
 		super().__init__(parent)
 		self.app = app
 		self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Dialog)
@@ -263,7 +263,7 @@ class StickyNote(QWidget):
 
 
 	@classmethod
-	def deserialize(cls, data: dict[str, int|str], app: NotesInterface) -> StickyNote:
+	def deserialize(cls, data: dict[str, int|str], app: NotesProtocol) -> StickyNote:
 		x = int(data["x"])
 		y = int(data["y"])
 		w = int(data["w"])

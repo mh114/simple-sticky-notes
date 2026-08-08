@@ -12,7 +12,7 @@ from PySide6.QtDBus import QDBusInterface, QDBusConnection
 
 from components.icon_cache import IconCache
 from components.sticky_note import StickyNote
-from components.notes_interface import NotesInterface
+from components.notes_protocol import NotesProtocol
 
 
 APP_NAME_PATH = "simple-sticky-notes"
@@ -24,7 +24,7 @@ APP_VERSION = "0.1"
 NOTES_FILENAME = "notes.json"
 
 
-class SimpleStickyNotes(NotesInterface):
+class SimpleStickyNotes(NotesProtocol):
 	""" Main application class """
 
 	def __init__(self):
@@ -185,7 +185,7 @@ class SimpleStickyNotes(NotesInterface):
 			return
 
 
-	# Implement NotesInterface:
+	# Implement NotesProtocol:
 	#---------------------------
 	def delete_note(self, note: StickyNote):
 		# TODO: Perhaps should keep the last deleted note saved and allow undeleting it
