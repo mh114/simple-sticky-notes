@@ -161,7 +161,6 @@ class StickyNote(QWidget):
 
 
 	def change_color(self, color: QColor, index: int = -1):
-		print("color: " + color.name() + ", index: " + str(index))
 		self.color_index = index
 		darker = color.darker(125)
 		self.setStyleSheet(f"""

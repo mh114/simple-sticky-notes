@@ -49,9 +49,6 @@ class IconCache:
 
 			icon = QIcon(pixmap)
 			_icons[cache_path] = icon
-			# TODO: Remove outputs
-			print("Loaded new icon to cache: " + cache_path)
-		else:
-			print(" - reusing " + cache_path)
+			# print("Loaded new icon to cache: " + cache_path)
 
 		return icon
