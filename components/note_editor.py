@@ -83,23 +83,26 @@ class NoteEditor(QTextEdit):
 			match key:
 				case Qt.Key.Key_B:
 					self.toggle_bold()
+					return
 
 				case Qt.Key.Key_I:
 					self.toggle_italic()
+					return
 
 				case Qt.Key.Key_U:
 					self.toggle_underline()
-			return
+					return
 
 		# SHIFT-CTRL-X = strikethrough, -F = clear formatting
 		if modifiers == (Qt.KeyboardModifier.ControlModifier | Qt.KeyboardModifier.ShiftModifier):
 			match key:
 				case Qt.Key.Key_X:
 					self.toggle_strikethrough()
+					return
 
 				case Qt.Key.Key_F:
 					self.clear_formatting()
-			return
+					return
 
 		return super().keyPressEvent(event)
 
