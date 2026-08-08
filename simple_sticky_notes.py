@@ -7,7 +7,7 @@ os.environ["QT_QPA_PLATFORM"] = "xcb"
 
 from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMessageBox
 from PySide6.QtCore import QCommandLineOption, QCommandLineParser, QSettings, QSize, QStandardPaths
-from PySide6.QtGui import QFont, QFontDatabase, Qt
+from PySide6.QtGui import QFont, QFontDatabase, QIcon, Qt
 from PySide6.QtDBus import QDBusInterface, QDBusConnection
 
 from components.icon_cache import IconCache
@@ -18,7 +18,7 @@ from components.notes_protocol import NotesProtocol
 APP_NAME_PATH = "simple-sticky-notes"
 APP_NAME = "SimpleStickyNotes"
 APP_DISPLAY_NAME = "(Simple) Sticky Notes"
-APP_DESCRIPTION = "Simple sticky notes application."
+APP_DESCRIPTION = "A simple sticky notes application, nothing more."
 APP_ORG = "MHGames"
 APP_VERSION = "0.1"
 NOTES_FILENAME = "notes.json"
@@ -69,9 +69,10 @@ class SimpleStickyNotes(NotesProtocol):
 
 		# Tray context menu
 		menu = QMenu()
-		menu.addAction("New Note", self.create_note)
+		menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.DocumentNew), "Add new note", self.create_note)
 		menu.addSeparator()
-		menu.addAction("Quit", self.quit_app)
+		menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.HelpAbout),"About this app...", self.on_about)
+		menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.ApplicationExit), "Quit", self.quit_app)
 		self.tray.setContextMenu(menu)
 
 		# Single click on tray icon toggles all notes
@@ -107,6 +108,18 @@ class SimpleStickyNotes(NotesProtocol):
 			if self.are_notes_visible:
 				self.save_notes()
 			self.toggle_notes()
+
+
+	def on_about(self):
+		QMessageBox.about(None,
+					APP_DISPLAY_NAME,
+					f"""
+					<b>{APP_DISPLAY_NAME}</b> — v{APP_VERSION}<br>
+					{APP_DESCRIPTION}<br><br>
+					<span style="color: grey; font-size: 10pt;">
+					Copyright &copy; 2026 Mika Halttunen (<a href="https://www.mhgames.org">www.mhgames.org</a>).
+					</span>
+					""")
 
 
 	def toggle_notes(self):
