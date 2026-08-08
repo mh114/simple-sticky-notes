@@ -1,0 +1,19 @@
+# 3rd party asset licenses
+
+## From [FontAwesome][fontawesome]:
+Used under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+- `droplet-solid-full.svg`
+- `paintbrush-solid-full.svg`
+
+## From [Bootstrap Icons][bootstrap]:
+Used under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
+- `stickies-fill.svg`
+- `stickies.svg`
+
+## Made by Mika Halttunen:
+Placed under MIT license like the rest of this application.
+- `delete-note-mh.svg`
+
+
+[fontawesome]: https://fontawesome.com/
+[bootstrap]:https://icons.getbootstrap.com/
