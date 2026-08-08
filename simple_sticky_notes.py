@@ -6,11 +6,13 @@ import sys
 os.environ["QT_QPA_PLATFORM"] = "xcb"
 
 from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMessageBox
-from PySide6.QtCore import QSettings, QStandardPaths
-from PySide6.QtGui import QIcon, QFont, QFontDatabase
+from PySide6.QtCore import QSettings, QSize, QStandardPaths
+from PySide6.QtGui import QFont, QFontDatabase, Qt
 from PySide6.QtDBus import QDBusInterface, QDBusConnection
 
+from components.icon_cache import IconCache
 from components.sticky_note import StickyNote
+
 
 APP_NAME_PATH = "simple-sticky-notes"
 APP_NAME = "SimpleStickyNotes"
@@ -27,10 +29,13 @@ class SimpleStickyNotes:
 
 		# TODO: Offer to import from Linux Mint Sticky notes on 1st startup
 
+		#icon = QIcon.fromTheme("note-new")
+		icon = IconCache.load_icon_svg("stickies.svg", size=QSize(64,64), scale=0.9, color=Qt.GlobalColor.white)
 		self.app.setDesktopFileName(APP_NAME_PATH)
 		self.app.setApplicationName(APP_NAME_PATH)
 		self.app.setOrganizationName(APP_ORG)
 		self.app.setQuitOnLastWindowClosed(False)
+		self.app.setWindowIcon(icon)
 
 		# Font with emoji fallbacks
 		# FIXME: Any way to get Noto or Twitter emoji working!?
@@ -50,7 +55,7 @@ class SimpleStickyNotes:
 		self.is_quitting = False
 
 		# Setup tray icon
-		self.tray = QSystemTrayIcon(QIcon.fromTheme("note-new"))
+		self.tray = QSystemTrayIcon(icon)
 		self.tray.setToolTip(APP_NAME)
 
 		# Tray context menu

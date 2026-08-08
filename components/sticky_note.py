@@ -2,16 +2,19 @@ from PySide6.QtWidgets import (
 	QToolButton, QWidget, QPushButton, QLineEdit, QVBoxLayout, QHBoxLayout,
 	QMessageBox, QGraphicsDropShadowEffect, QSizeGrip, QStackedWidget
 )
-from PySide6.QtCore import Qt, QEvent
-from PySide6.QtGui import QColor, QCloseEvent, QIcon
+from PySide6.QtCore import QSize, Qt, QEvent
+from PySide6.QtGui import QColor, QCloseEvent
 
 from components.color_picker_menu import ColorPickerMenu
 from components.ellipsis_label import EllipsisLabel
+from components.icon_cache import IconCache
 from components.note_editor import NoteEditor
 
 SHADOW_COLOR = QColor(0, 0, 0, 50)
 SHADOW_COLOR_FOCUSED = QColor(0, 0, 0, 100)
-
+ICON_SIZE = QSize(20, 20)
+ICON_OPACITY = 0.6
+TOOL_BUTTON_SIZE = QSize(28, 28)
 
 class StickyNote(QWidget):
 	def __init__(self, parent = None, text = "New Note", title = "Note", app: SimpleStickyNotes = None): # type: ignore
@@ -58,15 +61,17 @@ class StickyNote(QWidget):
 				background: transparent;
 			}
 
-			QPushButton#deleteButton {
-				color: #cc000000;
+			QToolButton, QPushButton {
 				border: none;
 				background: transparent;
-				font-weight: bold;
+				padding: 0px;
+				border-radius: 3px;
 			}
-			QPushButton#deleteButton:hover {
-				color: red;
-				font-size: 16pt;
+			QToolButton:hover, QPushButton:hover {
+				background-color: rgba(0, 0, 0, 0.2);
+			}
+			QToolButton::menu-indicator {
+				image: none;
 			}
 		""")
 		layout.addWidget(self.container)
@@ -79,9 +84,9 @@ class StickyNote(QWidget):
 		self.header.setObjectName("header")
 		self.header.setMinimumHeight(36)
 		self.header.setMaximumHeight(36)
-		#self.header.setStyleSheet("QWidget#header { background: transparent; border: none; border-radius: 0px; }")
 		header_layout = QHBoxLayout(self.header)
-		header_layout.setContentsMargins(4, 2, 6, 2)
+		header_layout.setContentsMargins(4, 2, 4, 2)
+		header_layout.setSpacing(0)
 
 		# Title label (uses ellipsis)
 		self.title = EllipsisLabel(title, self.header)
@@ -101,36 +106,24 @@ class StickyNote(QWidget):
 		# Color picker -button
 		color_button = QToolButton(self.header, popupMode=QToolButton.ToolButtonPopupMode.InstantPopup)
 		color_button.setToolTip("Change note color")
-		color_button.setIcon(QIcon.fromTheme("draw-brush", QIcon.fromTheme("format-fill-color")))
-		color_button.setFixedSize(24, 24)
+		color_button.setIcon(IconCache.load_icon_svg("droplet-solid-full.svg", size=ICON_SIZE, opacity=ICON_OPACITY))
+		color_button.setFixedSize(TOOL_BUTTON_SIZE)
+		color_button.setIconSize(ICON_SIZE)
 		color_menu = ColorPickerMenu(parent = color_button)
 		color_menu.color_picked.connect(self.change_color)
 		color_button.setMenu(color_menu)
-		color_button.setStyleSheet("""
-			QToolButton {
-				border: none;
-				background: transparent;
-				padding: 2px;
-				border-radius: 3px;
-			}
-			QToolButton:hover {
-				background-color: rgba(0, 0, 0, 0.2);
-			}
-			QToolButton::menu-indicator {
-				image: none;
-			}
-		""")
 
 		# Delete-button
-		delete_button = QPushButton("×", self.header)
-		delete_button.setObjectName("deleteButton")
-		delete_button.setFixedSize(20, 20)
+		delete_button = QPushButton("", self.header)
+		delete_button.setIcon(IconCache.load_icon_svg("delete-note-mh.svg", size=ICON_SIZE, scale=0.9, opacity=ICON_OPACITY))
+		delete_button.setIconSize(ICON_SIZE)
+		delete_button.setFixedSize(TOOL_BUTTON_SIZE)
 		delete_button.setToolTip("Delete the note<br><small><b>(no undo!)</b></small>")
 		delete_button.clicked.connect(self.close)
 
 		# Header layout
 		header_layout.addWidget(self.title_stack)
-		#header_layout.addStretch()
+		header_layout.addStretch()
 		header_layout.addWidget(color_button)
 		header_layout.addWidget(delete_button)
 
