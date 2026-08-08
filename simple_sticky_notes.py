@@ -103,6 +103,9 @@ class SimpleStickyNotes(NotesProtocol):
 
 	def on_tray_activated(self, reason):
 		if reason == QSystemTrayIcon.ActivationReason.Trigger:  # Left click
+			# If hiding notes, autosave
+			if self.are_notes_visible:
+				self.save_notes()
 			self.toggle_notes()
 
 
