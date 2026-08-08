@@ -18,13 +18,15 @@ ICON_OPACITY = 0.6
 TOOL_BUTTON_SIZE = QSize(28, 28)
 
 class StickyNote(QWidget):
-	def __init__(self, parent = None, text = "New Note", title = "Note", app: NotesProtocol = None):
+	def __init__(self, parent = None, text = "New Note", title = None, app: NotesProtocol = None):
 		super().__init__(parent)
 		self.app = app
 		self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Dialog)
 		self.setAttribute(Qt.WidgetAttribute.WA_MouseTracking, True)
 		self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
 		self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
+		if title == None:
+			title = "Note"
 
 		# Build the layout: main layout only has margins and a container layout, container has a drop-shadow
 		layout = QVBoxLayout(self)
@@ -105,9 +107,15 @@ class StickyNote(QWidget):
 		self.title_stack.addWidget(self.title_editor)
 
 		# Color picker -button
+		match self.app.get_settings().value("notes/color_icon_name", "droplet"):
+			case "paintbrush" | "brush":
+				color_icon_name = "paintbrush-solid-full.svg"
+			case _:
+				color_icon_name = "droplet-solid-full.svg"
+
 		color_button = QToolButton(self.header, popupMode=QToolButton.ToolButtonPopupMode.InstantPopup)
 		color_button.setToolTip("Change note color")
-		color_button.setIcon(IconCache.load_icon_svg("droplet-solid-full.svg", size=ICON_SIZE, opacity=ICON_OPACITY))
+		color_button.setIcon(IconCache.load_icon_svg(color_icon_name, size=ICON_SIZE, opacity=ICON_OPACITY))
 		color_button.setFixedSize(TOOL_BUTTON_SIZE)
 		color_button.setIconSize(ICON_SIZE)
 		color_menu = ColorPickerMenu(parent = color_button)

@@ -22,6 +22,7 @@ APP_DESCRIPTION = "A simple sticky notes application, nothing more."
 APP_ORG = "MHGames"
 APP_VERSION = "0.1"
 NOTES_FILENAME = "notes.json"
+SETTINGS_FILENAME = f"{APP_NAME_PATH}.conf"
 
 
 class SimpleStickyNotes(NotesProtocol):
@@ -41,23 +42,22 @@ class SimpleStickyNotes(NotesProtocol):
 		self.app.setQuitOnLastWindowClosed(False)
 
 		self.process_command_line_args(self.app)
+		self.load_config()
 
 		#icon = QIcon.fromTheme("note-new")
 		icon = IconCache.load_icon_svg("stickies.svg", size=QSize(64,64), scale=0.9, color=Qt.GlobalColor.white)
 		self.app.setWindowIcon(icon)
 
-		# Font with emoji fallbacks
+		# Set global font and emoji font families
 		# FIXME: Any way to get Noto or Twitter emoji working!?
-		#print("font load: " + str(QFontDatabase.addApplicationFont("fonts/TwitterColorEmoji-SVGinOT.ttf")))
-		QFontDatabase.setApplicationEmojiFontFamilies(["Twitter Color Emoji", "Segoe UI Emoji", "Noto Color Emoji"])
+		#        QFontDatabase.addApplicationFont("fonts/TwitterColorEmoji-SVGinOT.ttf")
+		QFontDatabase.setApplicationEmojiFontFamilies(self.emoji_font_names)
 		app_font = QFont()
-		#app_font.setFamilies(["Inter", "Noto Sans", "Noto Color Emoji"])
-		app_font.setPointSize(14)
-		#app_font.setPixelSize(16)
+		if self.font_name:
+			app_font.setFamily(self.font_name)
+		if self.font_size > 0:
+			app_font.setPointSize(self.font_size)
 		self.app.setFont(app_font)
-
-		# TODO: Use proper organization and app names
-		self.settings = QSettings(QSettings.Format.IniFormat, QSettings.Scope.UserScope, "SimpleStickyNotes", "notes")
 
 		self.notes: list[StickyNote] = []
 		self.are_notes_visible = True
@@ -133,8 +133,10 @@ class SimpleStickyNotes(NotesProtocol):
 
 
 	def create_note(self):
-		# TODO: Better default text
-		note = StickyNote(text = f"Note #{len(self.notes) + 1}", app = self)
+		note = StickyNote(
+					text = f"Note #{len(self.notes) + 1}",
+					title = self.settings.value("notes/default_title"),
+					app = self)
 		if not self.are_notes_visible:
 			self.toggle_notes()
 
@@ -149,14 +151,35 @@ class SimpleStickyNotes(NotesProtocol):
 		self.save_notes()
 
 
-	def run(self):
-		sys.exit(self.app.exec())
+	def run(self) -> int:
+		return self.app.exec()
 
 
 	def quit_app(self):
 		self._is_quitting = True
 		self.save_notes()
 		self.app.quit()
+
+
+	def load_config(self):
+		config_file = os.path.join(QStandardPaths.writableLocation(QStandardPaths.ConfigLocation), APP_NAME_PATH, SETTINGS_FILENAME)
+		print("Config file: " + config_file)
+		os.makedirs(os.path.dirname(config_file), exist_ok=True)
+		self.settings = QSettings(config_file, QSettings.Format.IniFormat)
+
+		if not self.settings.allKeys():
+			print("No settings, initialize defaults..")
+			self.settings.setValue("fonts/font_size", -1)
+			self.settings.setValue("fonts/font_name", "")
+			self.settings.setValue("fonts/emoji_font_names", ["Noto Color Emoji", "Twitter Color Emoji", "Segoe UI Emoji"])
+
+			self.settings.setValue("notes/default_title", "Note")
+			self.settings.setValue("notes/color_icon_name", "droplet")
+			self.settings.sync()
+
+		self.font_size = int(self.settings.value("fonts/font_size", -1))
+		self.font_name = str(self.settings.value("fonts/font_name", ""))
+		self.emoji_font_names = self.settings.value("fonts/emoji_font_names")
 
 
 	def save_notes(self):
@@ -225,6 +248,10 @@ class SimpleStickyNotes(NotesProtocol):
 
 	def is_quitting(self):
 		return self._is_quitting
+
+
+	def get_settings(self) -> QSettings:
+		return self.settings
 	#---------------------------
 
 
@@ -249,4 +276,4 @@ class SimpleStickyNotes(NotesProtocol):
 
 
 if __name__ == "__main__":
-	SimpleStickyNotes().run()
+	sys.exit(SimpleStickyNotes().run())
