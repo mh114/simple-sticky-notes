@@ -12,6 +12,7 @@ from PySide6.QtDBus import QDBusInterface, QDBusConnection
 
 from components.icon_cache import IconCache
 from components.sticky_note import StickyNote
+from components.notes_interface import NotesInterface
 
 
 APP_NAME_PATH = "simple-sticky-notes"
@@ -23,7 +24,7 @@ APP_VERSION = "0.1"
 NOTES_FILENAME = "notes.json"
 
 
-class SimpleStickyNotes:
+class SimpleStickyNotes(NotesInterface):
 	""" Main application class """
 
 	def __init__(self):
@@ -60,7 +61,7 @@ class SimpleStickyNotes:
 
 		self.notes: list[StickyNote] = []
 		self.are_notes_visible = True
-		self.is_quitting = False
+		self._is_quitting = False
 
 		# Setup tray icon
 		self.tray = QSystemTrayIcon(icon)
@@ -132,21 +133,12 @@ class SimpleStickyNotes:
 		self.save_notes()
 
 
-	def delete_note(self, note: StickyNote):
-		# TODO: Perhaps should keep the last deleted note saved and allow undeleting it
-		if note in self.notes:
-			self.notes.remove(note)
-			note.close()
-			print("Deleted " + str(note))
-			self.save_notes()
-
-
 	def run(self):
 		sys.exit(self.app.exec())
 
 
 	def quit_app(self):
-		self.is_quitting = True
+		self._is_quitting = True
 		self.save_notes()
 		self.app.quit()
 
@@ -178,7 +170,8 @@ class SimpleStickyNotes:
 				notes_data = json.load(f)["notes"]
 				for note_data in notes_data:
 					note = StickyNote.deserialize(note_data, app=self)
-					note.show()
+					if not self.stealth_mode:
+						note.show()
 					self.notes.append(note)
 					print(f"- Loaded note #{note_data["i"]} titled '{note_data["title"]}'")
 
@@ -192,6 +185,17 @@ class SimpleStickyNotes:
 			return
 
 
+	# Implement NotesInterface:
+	#---------------------------
+	def delete_note(self, note: StickyNote):
+		# TODO: Perhaps should keep the last deleted note saved and allow undeleting it
+		if note in self.notes:
+			self.notes.remove(note)
+			note.close()
+			print("Deleted " + str(note))
+			self.save_notes()
+
+
 	def on_note_sent_to_front(self, note: StickyNote):
 		if note not in self.notes:
 			print("ERROR: Note not managed!?")
@@ -201,6 +205,11 @@ class SimpleStickyNotes:
 		if self.notes and self.notes[-1] != note:
 			self.notes.remove(note)
 			self.notes.append(note)
+
+
+	def is_quitting(self):
+		return self._is_quitting
+	#---------------------------
 
 
 	def register_kwin_rules(self):

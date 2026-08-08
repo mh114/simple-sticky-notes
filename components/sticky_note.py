@@ -9,6 +9,7 @@ from components.color_picker_menu import ColorPickerMenu
 from components.ellipsis_label import EllipsisLabel
 from components.icon_cache import IconCache
 from components.note_editor import NoteEditor
+from components.notes_interface import NotesInterface
 
 SHADOW_COLOR = QColor(0, 0, 0, 50)
 SHADOW_COLOR_FOCUSED = QColor(0, 0, 0, 100)
@@ -17,7 +18,7 @@ ICON_OPACITY = 0.6
 TOOL_BUTTON_SIZE = QSize(28, 28)
 
 class StickyNote(QWidget):
-	def __init__(self, parent = None, text = "New Note", title = "Note", app: SimpleStickyNotes = None): # type: ignore
+	def __init__(self, parent = None, text = "New Note", title = "Note", app: NotesInterface = None):
 		super().__init__(parent)
 		self.app = app
 		self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Dialog)
@@ -128,7 +129,7 @@ class StickyNote(QWidget):
 		header_layout.addWidget(delete_button)
 
 		# Main note text editor
-		self.editor = NoteEditor(text, self.container) # QTextEdit(self.container)
+		self.editor = NoteEditor(text, self.container)
 
 		# Footer has grip handle for resizing the note
 		self.footer = QWidget(self.container)
@@ -191,7 +192,7 @@ class StickyNote(QWidget):
 
 	def closeEvent(self, event: QCloseEvent):
 		# Confirm closing the note (also deletes it), unless we're quitting the app
-		if self.app and not self.app.is_quitting:
+		if self.app and not self.app.is_quitting():
 			title = self.title.text()
 			if title:
 				title = f" titled <b>\"{title}\"</b>.."
@@ -262,7 +263,7 @@ class StickyNote(QWidget):
 
 
 	@classmethod
-	def deserialize(cls, data: dict[str, int|str], app: SimpleStickyNotes) -> StickyNote: # type: ignore
+	def deserialize(cls, data: dict[str, int|str], app: NotesInterface) -> StickyNote:
 		x = int(data["x"])
 		y = int(data["y"])
 		w = int(data["w"])
