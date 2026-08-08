@@ -6,7 +6,7 @@ import sys
 os.environ["QT_QPA_PLATFORM"] = "xcb"
 
 from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMessageBox
-from PySide6.QtCore import QSettings, QSize, QStandardPaths
+from PySide6.QtCore import QCommandLineOption, QCommandLineParser, QSettings, QSize, QStandardPaths
 from PySide6.QtGui import QFont, QFontDatabase, Qt
 from PySide6.QtDBus import QDBusInterface, QDBusConnection
 
@@ -16,7 +16,10 @@ from components.sticky_note import StickyNote
 
 APP_NAME_PATH = "simple-sticky-notes"
 APP_NAME = "SimpleStickyNotes"
+APP_DISPLAY_NAME = "(Simple) Sticky Notes"
+APP_DESCRIPTION = "Simple sticky notes application."
 APP_ORG = "MHGames"
+APP_VERSION = "0.1"
 NOTES_FILENAME = "notes.json"
 
 
@@ -29,12 +32,17 @@ class SimpleStickyNotes:
 
 		# TODO: Offer to import from Linux Mint Sticky notes on 1st startup
 
-		#icon = QIcon.fromTheme("note-new")
-		icon = IconCache.load_icon_svg("stickies.svg", size=QSize(64,64), scale=0.9, color=Qt.GlobalColor.white)
 		self.app.setDesktopFileName(APP_NAME_PATH)
 		self.app.setApplicationName(APP_NAME_PATH)
+		self.app.setApplicationDisplayName(APP_DISPLAY_NAME)
+		self.app.setApplicationVersion(APP_VERSION)
 		self.app.setOrganizationName(APP_ORG)
 		self.app.setQuitOnLastWindowClosed(False)
+
+		self.process_command_line_args(self.app)
+
+		#icon = QIcon.fromTheme("note-new")
+		icon = IconCache.load_icon_svg("stickies.svg", size=QSize(64,64), scale=0.9, color=Qt.GlobalColor.white)
 		self.app.setWindowIcon(icon)
 
 		# Font with emoji fallbacks
@@ -56,7 +64,7 @@ class SimpleStickyNotes:
 
 		# Setup tray icon
 		self.tray = QSystemTrayIcon(icon)
-		self.tray.setToolTip(APP_NAME)
+		self.tray.setToolTip(self.app.applicationDisplayName())
 
 		# Tray context menu
 		menu = QMenu()
@@ -74,6 +82,23 @@ class SimpleStickyNotes:
 		if not self.notes:
 			self.create_note()
 
+		# Stealth-mode?
+		if self.stealth_mode:
+			self.set_notes_visible(False)
+
+
+	def process_command_line_args(self, app: QApplication):
+		parser = QCommandLineParser()
+		parser.setApplicationDescription(APP_DESCRIPTION)
+		parser.addHelpOption()
+		parser.addVersionOption()
+
+		parser.addOption(QCommandLineOption(["s", "stealth"], "Stealth-mode: hides notes on startup."))
+		# TODO: Add option to add the KWin rules
+		parser.process(app)
+
+		self.stealth_mode = parser.isSet("stealth")
+
 
 	def on_tray_activated(self, reason):
 		if reason == QSystemTrayIcon.ActivationReason.Trigger:  # Left click
@@ -81,9 +106,13 @@ class SimpleStickyNotes:
 
 
 	def toggle_notes(self):
-		self.are_notes_visible = not self.are_notes_visible
+		self.set_notes_visible(not self.are_notes_visible)
+
+
+	def set_notes_visible(self, visible: bool):
+		self.are_notes_visible = visible
 		for note in self.notes:
-			note.setVisible(self.are_notes_visible)
+			note.setVisible(visible)
 
 
 	def create_note(self):
@@ -100,6 +129,7 @@ class SimpleStickyNotes:
 
 		note.show()
 		self.notes.append(note)
+		self.save_notes()
 
 
 	def delete_note(self, note: StickyNote):
@@ -108,6 +138,7 @@ class SimpleStickyNotes:
 			self.notes.remove(note)
 			note.close()
 			print("Deleted " + str(note))
+			self.save_notes()
 
 
 	def run(self):
@@ -150,6 +181,9 @@ class SimpleStickyNotes:
 					note.show()
 					self.notes.append(note)
 					print(f"- Loaded note #{note_data["i"]} titled '{note_data["title"]}'")
+
+				if self.notes:
+					self.notes[-1].send_to_front()
 				
 		except FileNotFoundError:
 			return
