@@ -18,7 +18,7 @@ ICON_OPACITY = 0.6
 TOOL_BUTTON_SIZE = QSize(28, 28)
 
 class StickyNote(QWidget):
-	def __init__(self, parent = None, text = "New Note", title = None, app: NotesProtocol = None):
+	def __init__(self, parent = None, text = "New Note", title = None, font_size_offset: int = 0, app: NotesProtocol = None):
 		super().__init__(parent)
 		self.app = app
 		self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Dialog)
@@ -137,7 +137,7 @@ class StickyNote(QWidget):
 		header_layout.addWidget(delete_button)
 
 		# Main note text editor
-		self.editor = NoteEditor(text, self.container)
+		self.editor = NoteEditor(text, self.container, font_size_offset)
 
 		# Footer has grip handle for resizing the note
 		self.footer = QWidget(self.container)
@@ -266,6 +266,7 @@ class StickyNote(QWidget):
 			"w": geom.width(),
 			"h": geom.height(),
 			"color": self.color_index,
+			"font_size": self.editor.font_size_offset,
 		}
 		return data
 
@@ -278,9 +279,10 @@ class StickyNote(QWidget):
 		h = int(data["h"])
 		text = str(data["text"])
 		title = str(data["title"])
+		font_size = int(data.get("font_size", 0))
 		color_index = int(data.get("color", -1))
 
-		note = cls(text = text, title = title, app = app)
+		note = cls(text = text, title = title, app = app, font_size_offset = font_size)
 		note.move(x, y)
 		note.resize(w, h)
 

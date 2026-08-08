@@ -1,15 +1,41 @@
 import html
 
-from PySide6.QtWidgets import QTextEdit
+from PySide6.QtWidgets import QApplication, QTextEdit
 from PySide6.QtGui import QTextCharFormat, QFont
 from PySide6.QtCore import QEvent, Qt
 
 class NoteEditor(QTextEdit):
-	def __init__(self, text: str = "", parent = None):
+	def __init__(self, text: str = "", parent = None, font_size_offset: int = 0):
 		super().__init__(parent)
+		self.set_font_size_offset(font_size_offset)
 		self.setTabStopDistance(4 * 8)
 		if text:
 			self.set_rich_text(text)
+
+
+	def set_font_size_offset(self, offset: int):
+		self.font_size_offset = max(-8, min(16, offset))
+		self.apply_font_size()
+
+
+	def apply_font_size(self):
+		# Apply current font size offset to the global app font size
+		font = QFont(QApplication.font())
+		base_size = font.pointSize()
+		rel_size = max(6, base_size + self.font_size_offset)
+		font.setPointSize(rel_size)
+		# print(f"Applying font size {rel_size}, offset: {self.font_size_offset}")
+
+		self.setFont(font)
+		self.document().setDefaultFont(font)
+
+
+	def zoom_in(self):
+		self.set_font_size_offset(self.font_size_offset + 1)
+
+
+	def zoom_out(self):
+		self.set_font_size_offset(self.font_size_offset - 1)
 
 
 	def get_rich_text(self) -> str:
@@ -77,20 +103,30 @@ class NoteEditor(QTextEdit):
 		modifiers = event.modifiers()
 		key = event.key()
 
-		# Handle rich text shortcuts
-		# CTRL-B, CTRL-I, CTRL-U
+		# Handle rich text shortcuts + zoom
 		if modifiers == Qt.KeyboardModifier.ControlModifier:
 			match key:
+				# CTRL-B, CTRL-I, CTRL-U
 				case Qt.Key.Key_B:
 					self.toggle_bold()
 					return
-
 				case Qt.Key.Key_I:
 					self.toggle_italic()
 					return
-
 				case Qt.Key.Key_U:
 					self.toggle_underline()
+					return
+
+				# Zooming
+				# TODO: Allow mouse wheel zooming
+				case Qt.Key.Key_Plus:
+					self.zoom_in()
+					return
+				case Qt.Key.Key_Minus:
+					self.zoom_out()
+					return
+				case Qt.Key.Key_0:
+					self.set_font_size_offset(0)
 					return
 
 		# SHIFT-CTRL-X = strikethrough, -F = clear formatting

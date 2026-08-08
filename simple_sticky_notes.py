@@ -174,7 +174,7 @@ class SimpleStickyNotes(NotesProtocol):
 			self.settings.setValue("fonts/emoji_font_names", ["Noto Color Emoji", "Twitter Color Emoji", "Segoe UI Emoji"])
 
 			self.settings.setValue("notes/default_title", "Note")
-			self.settings.setValue("notes/color_icon_name", "droplet")
+			self.settings.setValue("notes/color_icon_name", "droplet") # "droplet" or "paintbrush|brush"
 			self.settings.sync()
 
 		self.font_size = int(self.settings.value("fonts/font_size", -1))
