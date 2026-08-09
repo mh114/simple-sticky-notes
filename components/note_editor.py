@@ -5,12 +5,19 @@ from PySide6.QtGui import QKeyEvent, QTextCharFormat, QFont, QWheelEvent
 from PySide6.QtCore import QEvent, Qt
 
 class NoteEditor(QTextEdit):
-	def __init__(self, text: str = "", parent = None, font_size_offset: int = 0):
+	def __init__(self, text: str = "", parent = None, font_size_offset: int = 0, monospace_font: QFont = None):
 		super().__init__(parent)
+		self.is_monospace = False
+		self.monospace_font = monospace_font
 		self.set_font_size_offset(font_size_offset)
 		self.setTabStopDistance(4 * 8)
 		if text:
 			self.set_rich_text(text)
+
+
+	def set_monospace(self, monospace: bool):
+		self.is_monospace = monospace
+		self.apply_font_size()
 
 
 	def set_font_size_offset(self, offset: int):
@@ -20,7 +27,10 @@ class NoteEditor(QTextEdit):
 
 	def apply_font_size(self):
 		# Apply current font size offset to the global app font size
-		font = QFont(QApplication.font())
+		if not self.is_monospace:
+			font = QFont(QApplication.font())
+		else:
+			font = QFont(self.monospace_font)
 		base_size = font.pointSize()
 		rel_size = max(6, base_size + self.font_size_offset)
 		font.setPointSize(rel_size)

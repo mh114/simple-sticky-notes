@@ -1,6 +1,7 @@
 from typing import Protocol, TYPE_CHECKING
 
 from PySide6.QtCore import QSettings
+from PySide6.QtGui import QFont
 
 if TYPE_CHECKING:
 	from components.sticky_note import StickyNote
@@ -12,4 +13,5 @@ class NotesProtocol(Protocol):
 	def on_note_sent_to_front(note: StickyNote): ...
 	def is_quitting() -> bool: ...
 	def get_settings() -> QSettings: ...
+	def get_monospace_font() -> QFont: ...
 

@@ -30,9 +30,6 @@ class SimpleStickyNotes(NotesProtocol):
 
 	def __init__(self):
 		self.app = QApplication(sys.argv)
-		#self.register_kwin_rules()
-
-		# TODO: Offer to import from Linux Mint Sticky notes on 1st startup
 
 		self.app.setDesktopFileName(APP_NAME_PATH)
 		self.app.setApplicationName(APP_NAME_PATH)
@@ -42,44 +39,22 @@ class SimpleStickyNotes(NotesProtocol):
 		self.app.setQuitOnLastWindowClosed(False)
 
 		self.process_command_line_args(self.app)
-		self.load_config()
+		first_run = self.load_config()
+		if first_run:
+			#self.register_kwin_rules()
+			pass
 
 		#icon = QIcon.fromTheme("note-new")
 		icon = IconCache.load_icon_svg("stickies.svg", size=QSize(64,64), scale=0.9, color=Qt.GlobalColor.white)
 		self.app.setWindowIcon(icon)
 
-		# Set global font and emoji font families
-		# FIXME: Any way to get Noto or Twitter emoji working!?
-		#        QFontDatabase.addApplicationFont("fonts/TwitterColorEmoji-SVGinOT.ttf")
-		QFontDatabase.setApplicationEmojiFontFamilies(self.emoji_font_names)
-		app_font = QFont()
-		if self.font_name:
-			app_font.setFamily(self.font_name)
-		if self.font_size > 0:
-			app_font.setPointSize(self.font_size)
-		self.app.setFont(app_font)
+		self.setup_fonts()
+		self.setup_tray_icon(icon)
 
+		# Load saved notes or create initial note if nothing is loaded
 		self.notes: list[StickyNote] = []
 		self.are_notes_visible = True
 		self._is_quitting = False
-
-		# Setup tray icon
-		self.tray = QSystemTrayIcon(icon)
-		self.tray.setToolTip(self.app.applicationDisplayName())
-
-		# Tray context menu
-		menu = QMenu()
-		menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.DocumentNew), "Add new note", self.create_note)
-		menu.addSeparator()
-		menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.HelpAbout),"About this app...", self.on_about)
-		menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.ApplicationExit), "Quit", self.quit_app)
-		self.tray.setContextMenu(menu)
-
-		# Single click on tray icon toggles all notes
-		self.tray.activated.connect(self.on_tray_activated)
-		self.tray.show()
-
-		# Load saved notes or create initial note if nothing is loaded
 		self.load_notes()
 		if not self.notes:
 			self.create_note()
@@ -100,6 +75,44 @@ class SimpleStickyNotes(NotesProtocol):
 		parser.process(app)
 
 		self.stealth_mode = parser.isSet("stealth")
+
+
+	def setup_fonts(self):
+		# Set global font and emoji font families
+		# FIXME: Any way to get Noto or Twitter emoji working!?
+		#        QFontDatabase.addApplicationFont("fonts/TwitterColorEmoji-SVGinOT.ttf")
+		QFontDatabase.setApplicationEmojiFontFamilies(self.emoji_font_names)
+		app_font = QFont(QFontDatabase.systemFont(QFontDatabase.SystemFont.GeneralFont))
+		if self.font_name and QFontDatabase.hasFamily(self.font_name):
+			app_font.setFamily(self.font_name)
+		if self.font_size > 0:
+			app_font.setPointSize(self.font_size)
+		self.app.setFont(app_font)
+
+		# Monospace font
+		self.monospace_font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
+		if self.monospace_font_name and QFontDatabase.hasFamily(self.monospace_font_name):
+			self.monospace_font.setFamily(self.monospace_font_name)
+		if self.font_size > 0:
+			self.monospace_font.setPointSize(self.font_size)
+
+
+	def setup_tray_icon(self, icon: QIcon):
+		# Setup tray icon
+		self.tray = QSystemTrayIcon(icon)
+		self.tray.setToolTip(self.app.applicationDisplayName())
+
+		# Tray context menu
+		menu = QMenu()
+		menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.DocumentNew), "Add new note", self.create_note)
+		menu.addSeparator()
+		menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.HelpAbout),"About this app...", self.on_about)
+		menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.ApplicationExit), "Quit", self.quit_app)
+		self.tray.setContextMenu(menu)
+
+		# Single click on tray icon toggles all notes
+		self.tray.activated.connect(self.on_tray_activated)
+		self.tray.show()
 
 
 	def on_tray_activated(self, reason):
@@ -161,25 +174,30 @@ class SimpleStickyNotes(NotesProtocol):
 		self.app.quit()
 
 
-	def load_config(self):
+	def load_config(self) -> bool:
+		first_run = False
 		config_file = os.path.join(QStandardPaths.writableLocation(QStandardPaths.ConfigLocation), APP_NAME_PATH, SETTINGS_FILENAME)
 		print("Config file: " + config_file)
 		os.makedirs(os.path.dirname(config_file), exist_ok=True)
 		self.settings = QSettings(config_file, QSettings.Format.IniFormat)
 
 		if not self.settings.allKeys():
+			first_run = True
 			print("No settings, initialize defaults..")
 			self.settings.setValue("fonts/font_size", -1)
 			self.settings.setValue("fonts/font_name", "")
+			self.settings.setValue("fonts/monospace_font_name", "")
 			self.settings.setValue("fonts/emoji_font_names", ["Noto Color Emoji", "Twitter Color Emoji", "Segoe UI Emoji"])
 
 			self.settings.setValue("notes/default_title", "Note")
-			self.settings.setValue("notes/color_icon_name", "droplet") # "droplet" or "paintbrush|brush"
+			self.settings.setValue("notes/color_icon_name", "droplet") # "droplet|paintbrush|brush|palette"
 			self.settings.sync()
 
 		self.font_size = int(self.settings.value("fonts/font_size", -1))
 		self.font_name = str(self.settings.value("fonts/font_name", ""))
+		self.monospace_font_name = str(self.settings.value("fonts/monospace_font_name", ""))
 		self.emoji_font_names = self.settings.value("fonts/emoji_font_names")
+		return first_run
 
 
 	def save_notes(self):
@@ -252,6 +270,10 @@ class SimpleStickyNotes(NotesProtocol):
 
 	def get_settings(self) -> QSettings:
 		return self.settings
+
+
+	def get_monospace_font(self) -> QFont:
+		return self.monospace_font
 	#---------------------------
 
 

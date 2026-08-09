@@ -37,7 +37,11 @@ pip install -r requirements.txt
   ```
 
 ### KDE Window rule, or: _how to avoid stickies being all over the taskbar?_
-Two options: manual setup or automatic setup.
+If your desktop is using **Wayland**, the sticky notes will likely show up as separate windows on the taskbar (because that's what they are, technically). For **X11**-based desktops, chances are they work as is, but I've not tested it personally.
+
+In any case, for proper UX, the stickies should be hidden from task switchers. Two options to do that (on **KDE**): manual setup or automatic setup.
+
+
 #### Automatic setup:
 **TODO: IMPLEMENT THIS** On the first run, **Simple Sticky Notes** offers to add the window rule for you, unless it already exists. Accept and it should do the trick.
 
@@ -55,7 +59,7 @@ Go to **KDE System Settings** → **Window Rules** and add a new rule. Configure
 Emojis in notes will work, _if_ **Qt** has support for rendering using the configured font. See below on emoji font configuration. For me, I found that the Windows emoji font (_Segoe UI Emoji_) worked, but some free alternatives did not. Your mileage may vary — it may be a system configuration issue. 🤔
 
 ## Configuration file
-After 1st run, the configuration file is located at `~/.config/simple-sticky-notes/simple-sticky-notes.conf`. Here are the options explained:
+After the first run, the configuration file is created at `~/.config/simple-sticky-notes/simple-sticky-notes.conf`. Here are the options explained:
 
 |section | setting | default value | explanation|
 |--------|---------|---------------|-----|

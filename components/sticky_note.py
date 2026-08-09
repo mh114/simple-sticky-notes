@@ -141,7 +141,7 @@ class StickyNote(QWidget):
 		header_layout.addWidget(delete_button)
 
 		# Main note text editor
-		self.editor = NoteEditor(text, self.container, font_size_offset)
+		self.editor = NoteEditor(text, self.container, font_size_offset, app.get_monospace_font())
 
 		# Footer has grip handle for resizing the note
 		self.footer = QWidget(self.container)
@@ -271,6 +271,7 @@ class StickyNote(QWidget):
 			"h": geom.height(),
 			"color": self.color_index,
 			"font_size": self.editor.font_size_offset,
+			"fixed_width": self.editor.is_monospace,
 		}
 		return data
 
@@ -285,10 +286,14 @@ class StickyNote(QWidget):
 		title = str(data["title"])
 		font_size = int(data.get("font_size", 0))
 		color_index = int(data.get("color", -1))
+		monospace = bool(data.get("fixed_width", False))
 
 		note = cls(text = text, title = title, app = app, font_size_offset = font_size)
 		note.move(x, y)
 		note.resize(w, h)
+
+		if monospace:
+			note.editor.set_monospace(True)
 
 		if color_index >= 0:
 			note.change_color(ColorPickerMenu.get_color_for_index(color_index), color_index)
