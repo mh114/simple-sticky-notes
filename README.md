@@ -12,7 +12,7 @@ This app was partially inspired by [**Linux Mint** Sticky](https://github.com/li
 - One click on the system tray icon to hide/show notes!
 - Global font name & size can be set through the [config-file](#configuration-file)
 	- Text size can be adjusted individually per sticky note as needed
-- [Emoji-support](#emoji-support)
+- ✅ [Emoji-support](#emoji-support)
 - Works in KDE, but alas, through XWayland for now... 😔
 	- I ran into issues with note/window positioning on Wayland and ultimately ended up side-stepping the issue by running in XWayland 🫣
 	- I _have_ some ideas on how to realise native Wayland support, but it remains to be seen if I can be bothered to try them.. 🤔
@@ -43,7 +43,9 @@ In any case, for proper UX, the stickies should be hidden from task switchers. T
 
 
 #### Automatic setup:
-**TODO: IMPLEMENT THIS** On the first run, **Simple Sticky Notes** offers to add the window rule for you, unless it already exists. Accept and it should do the trick.
+**TODO: IMPLEMENT THIS**
+
+On the first run, **Simple Sticky Notes** offers to add the window rule for you, unless it already exists. Accept and it should do the trick.
 
 #### Manual setup:
 Go to **KDE System Settings** → **Window Rules** and add a new rule. Configure it like below:
@@ -51,8 +53,7 @@ Go to **KDE System Settings** → **Window Rules** and add a new rule. Configure
 - Virtual desktops: **Force, All desktops** (this is optional)
 - Skip taskbar: **Force, Yes**
 - Skip pager: **Force, Yes**
-- Skip switcher: **Force, Yes**
-
+- Skip switcher: **Force, Yes**  
 ![Window rule setup](./img/kde_window_rule.webp)
 
 ### Emoji-support

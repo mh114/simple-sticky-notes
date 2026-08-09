@@ -7,7 +7,7 @@ import sys
 os.environ["QT_QPA_PLATFORM"] = "xcb"
 
 from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMessageBox
-from PySide6.QtCore import QCommandLineOption, QCommandLineParser, QSettings, QSize, QStandardPaths
+from PySide6.QtCore import QCommandLineOption, QCommandLineParser, QSettings, QSize, QStandardPaths, QTimer
 from PySide6.QtGui import QFont, QFontDatabase, QIcon, Qt
 from PySide6.QtDBus import QDBusInterface, QDBusConnection
 
@@ -74,22 +74,20 @@ class SimpleStickyNotes(NotesProtocol):
 		parser.addVersionOption()
 
 		parser.addOption(QCommandLineOption(["s", "stealth"], "Stealth-mode: hides notes on startup."))
-		# TODO: Add option to add the KWin rules
 		parser.process(app)
 
 		self.stealth_mode = parser.isSet("stealth")
 
 
 	def setup_fonts(self):
-		# Set global font and emoji font families
+		# Set app font and emoji font families
 		QFontDatabase.addApplicationFont(str(FONTS_PATH / "NotoColorEmoji.ttf"))
 		QFontDatabase.setApplicationEmojiFontFamilies(self.emoji_font_names)
-		app_font = QFont(QFontDatabase.systemFont(QFontDatabase.SystemFont.GeneralFont))
+		self.app_font = QFont(QFontDatabase.systemFont(QFontDatabase.SystemFont.GeneralFont))
 		if self.font_name and QFontDatabase.hasFamily(self.font_name):
-			app_font.setFamily(self.font_name)
+			self.app_font.setFamily(self.font_name)
 		if self.font_size > 0:
-			app_font.setPointSize(self.font_size)
-		self.app.setFont(app_font)
+			self.app_font.setPointSize(self.font_size)
 
 		# Monospace font
 		self.monospace_font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
@@ -100,7 +98,7 @@ class SimpleStickyNotes(NotesProtocol):
 
 		# Menu font (TODO: should use SystemFont.MenuFont, but not yet available)
 		self.menu_font = QFont(QFontDatabase.systemFont(QFontDatabase.SystemFont.GeneralFont))
-		self.menu_font.setPointSize(app_font.pointSize() - 2)
+		# self.menu_font.setPointSize(self.app_font.pointSize() - 1)
 
 
 	def setup_tray_icon(self, icon: QIcon):
@@ -112,7 +110,7 @@ class SimpleStickyNotes(NotesProtocol):
 		menu = QMenu()
 		menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.DocumentNew), "Add new note", self.create_note)
 		menu.addSeparator()
-		hide_on_startup_action = menu.addAction("Hide notes on startup", self.toggle_hide_on_startup)
+		hide_on_startup_action = menu.addAction(IconCache.load_icon_svg("eye-slash-regular-full.svg", size=QSize(64,64), scale=0.9, color=Qt.GlobalColor.white), "Hide notes on startup", self.toggle_hide_on_startup)
 		hide_on_startup_action.setCheckable(True)
 		hide_on_startup_action.setChecked(self.settings.value("notes/hide_on_startup", False, type=bool))
 		menu.addSeparator()
@@ -146,7 +144,8 @@ class SimpleStickyNotes(NotesProtocol):
 					APP_DISPLAY_NAME,
 					f"""
 					<b>{APP_DISPLAY_NAME}</b> — v{APP_VERSION}<br>
-					{APP_DESCRIPTION}<br><br>
+					{APP_DESCRIPTION}<br>
+					<a href="https://github.com/mh114/simple-sticky-notes">github.com/mh114/simple-sticky-notes</a><br><br>
 					<span style="color: grey; font-size: 10pt;">
 					Copyright &copy; 2026 Mika Halttunen (<a href="https://www.mhgames.org">www.mhgames.org</a>).
 					</span>
@@ -290,6 +289,9 @@ class SimpleStickyNotes(NotesProtocol):
 	def get_settings(self) -> QSettings:
 		return self.settings
 
+
+	def get_app_font(self) -> QFont:
+		return self.app_font
 
 	def get_monospace_font(self) -> QFont:
 		return self.monospace_font

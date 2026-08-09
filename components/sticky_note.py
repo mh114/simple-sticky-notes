@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (
-	QApplication, QMenu, QToolButton, QWidget, QPushButton, QLineEdit, QVBoxLayout, QHBoxLayout,
+	QMenu, QToolButton, QWidget, QPushButton, QLineEdit, QVBoxLayout, QHBoxLayout,
 	QMessageBox, QGraphicsDropShadowEffect, QSizeGrip, QStackedWidget
 )
 from PySide6.QtCore import QSize, Qt, QEvent
@@ -21,6 +21,7 @@ class StickyNote(QWidget):
 	def __init__(self, parent = None, text = "New Note", title: str|None = None, font_size_offset: int = 0, app: NotesProtocol = None):
 		super().__init__(parent)
 		self.app = app
+		self.setFont(app.get_app_font())
 		self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Dialog)
 		self.setAttribute(Qt.WidgetAttribute.WA_MouseTracking, True)
 		self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
@@ -83,7 +84,7 @@ class StickyNote(QWidget):
 		inner_layout.setSpacing(0)
 
 		# Main note text editor
-		self.editor = NoteEditor(text, self.container, font_size_offset, app.get_monospace_font())
+		self.editor = NoteEditor(text, self.container, font_size_offset, app)
 
 		# Header has title label + stacked title editor and some tool buttons
 		self.header = QWidget(self.container)
@@ -138,9 +139,6 @@ class StickyNote(QWidget):
 		font_button.setIconSize(ICON_SIZE)
 		font_button.setFixedSize(TOOL_BUTTON_SIZE)
 		font_menu = QMenu(parent = font_button)
-		font_menu.setStyle(QApplication.style())
-		font_menu.setPalette(QApplication.palette())
-		font_menu.setStyleSheet("")
 		font_menu.setFont(app.get_menu_font())
 		font_menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.FormatTextBold), "Bold", self.editor.toggle_bold, shortcut="Ctrl+B")
 		font_menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.FormatTextItalic), "Italic", self.editor.toggle_italic, shortcut="Ctrl+I")
