@@ -18,7 +18,7 @@ ICON_OPACITY = 0.6
 TOOL_BUTTON_SIZE = QSize(28, 28)
 
 class StickyNote(QWidget):
-	def __init__(self, parent = None, text = "New Note", title = None, font_size_offset: int = 0, app: NotesProtocol = None):
+	def __init__(self, parent = None, text = "New Note", title: str|None = None, font_size_offset: int = 0, app: NotesProtocol = None):
 		super().__init__(parent)
 		self.app = app
 		self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Dialog)
@@ -94,6 +94,7 @@ class StickyNote(QWidget):
 		# Title label (uses ellipsis)
 		self.title = EllipsisLabel(title, self.header)
 		self.title.setObjectName("title")
+		self.setWindowTitle(title)
 
 		# Stacked title editor
 		self.title_editor = QLineEdit(title, self.header)
@@ -190,6 +191,7 @@ class StickyNote(QWidget):
 			return
 		self.title.setText(self.title_editor.text())
 		self.title_stack.setCurrentWidget(self.title)
+		self.setWindowTitle(self.title_editor.text())
 
 
 	def send_to_front(self):
@@ -209,7 +211,7 @@ class StickyNote(QWidget):
 			if title:
 				title = f" titled <b>\"{title}\"</b>.."
 			reply = QMessageBox.question(self,
-					"Delete note?",
+					"Delete note",
 					f"Are you sure you want to delete note{title}?",
 					QMessageBox.Yes | QMessageBox.No,
 					QMessageBox.No)
