@@ -3,7 +3,9 @@
 ## From [FontAwesome][fontawesome]:
 Used under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 - `droplet-solid-full.svg`
+- `brush-solid-full.svg`
 - `paintbrush-solid-full.svg`
+- `palette-solid-full.svg`
 
 ## From [Bootstrap Icons][bootstrap]:
 Used under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).

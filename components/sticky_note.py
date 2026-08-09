@@ -108,8 +108,12 @@ class StickyNote(QWidget):
 
 		# Color picker -button
 		match self.app.get_settings().value("notes/color_icon_name", "droplet"):
-			case "paintbrush" | "brush":
+			case "paintbrush":
 				color_icon_name = "paintbrush-solid-full.svg"
+			case "brush":
+				color_icon_name = "brush-solid-full.svg"
+			case "palette":
+				color_icon_name = "palette-solid-full.svg"
 			case _:
 				color_icon_name = "droplet-solid-full.svg"
 
