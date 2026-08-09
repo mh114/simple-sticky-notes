@@ -2,7 +2,7 @@ import html
 
 from PySide6.QtWidgets import QApplication, QTextEdit
 from PySide6.QtGui import QKeyEvent, QTextCharFormat, QFont, QWheelEvent
-from PySide6.QtCore import QEvent, Qt
+from PySide6.QtCore import Qt
 
 class NoteEditor(QTextEdit):
 	def __init__(self, text: str = "", parent = None, font_size_offset: int = 0, monospace_font: QFont = None):
@@ -17,6 +17,11 @@ class NoteEditor(QTextEdit):
 
 	def set_monospace(self, monospace: bool):
 		self.is_monospace = monospace
+		self.apply_font_size()
+
+
+	def toggle_monospace(self):
+		self.is_monospace = not self.is_monospace
 		self.apply_font_size()
 
 

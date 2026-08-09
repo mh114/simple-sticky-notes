@@ -96,6 +96,10 @@ class SimpleStickyNotes(NotesProtocol):
 		if self.font_size > 0:
 			self.monospace_font.setPointSize(self.font_size)
 
+		# Menu font
+		self.menu_font = QFont(QFontDatabase.systemFont(QFontDatabase.SystemFont.GeneralFont))
+		self.menu_font.setPointSize(app_font.pointSize() - 2)
+
 
 	def setup_tray_icon(self, icon: QIcon):
 		# Setup tray icon
@@ -274,6 +278,10 @@ class SimpleStickyNotes(NotesProtocol):
 
 	def get_monospace_font(self) -> QFont:
 		return self.monospace_font
+
+
+	def get_menu_font(self) -> QFont:
+		return self.menu_font
 	#---------------------------
 
 

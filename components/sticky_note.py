@@ -1,9 +1,9 @@
 from PySide6.QtWidgets import (
-	QToolButton, QWidget, QPushButton, QLineEdit, QVBoxLayout, QHBoxLayout,
+	QApplication, QMenu, QToolButton, QWidget, QPushButton, QLineEdit, QVBoxLayout, QHBoxLayout,
 	QMessageBox, QGraphicsDropShadowEffect, QSizeGrip, QStackedWidget
 )
 from PySide6.QtCore import QSize, Qt, QEvent
-from PySide6.QtGui import QColor, QCloseEvent
+from PySide6.QtGui import QColor, QCloseEvent, QIcon
 
 from components.color_picker_menu import ColorPickerMenu
 from components.ellipsis_label import EllipsisLabel
@@ -82,7 +82,10 @@ class StickyNote(QWidget):
 		inner_layout.setContentsMargins(1, 1, 1, 1)
 		inner_layout.setSpacing(0)
 
-		# Header has title label + stacked title editor and a delete-button + color picker button
+		# Main note text editor
+		self.editor = NoteEditor(text, self.container, font_size_offset, app.get_monospace_font())
+
+		# Header has title label + stacked title editor and some tool buttons
 		self.header = QWidget(self.container)
 		self.header.setObjectName("header")
 		self.header.setMinimumHeight(36)
@@ -121,11 +124,38 @@ class StickyNote(QWidget):
 		color_button = QToolButton(self.header, popupMode=QToolButton.ToolButtonPopupMode.InstantPopup)
 		color_button.setToolTip("Change note color")
 		color_button.setIcon(IconCache.load_icon_svg(color_icon_name, size=ICON_SIZE, opacity=ICON_OPACITY))
-		color_button.setFixedSize(TOOL_BUTTON_SIZE)
 		color_button.setIconSize(ICON_SIZE)
+		color_button.setFixedSize(TOOL_BUTTON_SIZE)
 		color_menu = ColorPickerMenu(parent = color_button)
 		color_menu.color_picked.connect(self.change_color)
 		color_button.setMenu(color_menu)
+		self.color_menu = color_menu
+
+		# Font-button (take care not to steal focus from note editor)
+		font_button = QToolButton(self.header, popupMode=QToolButton.ToolButtonPopupMode.InstantPopup)
+		font_button.setToolTip("Adjust text formatting")
+		font_button.setIcon(IconCache.load_icon_svg("fonts.svg", size=ICON_SIZE, scale=1.2, opacity=ICON_OPACITY))
+		font_button.setIconSize(ICON_SIZE)
+		font_button.setFixedSize(TOOL_BUTTON_SIZE)
+		font_menu = QMenu(parent = font_button)
+		font_menu.setStyle(QApplication.style())
+		font_menu.setPalette(QApplication.palette())
+		font_menu.setStyleSheet("")
+		font_menu.setFont(app.get_menu_font())
+		font_menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.FormatTextBold), "Bold", self.editor.toggle_bold, shortcut="Ctrl+B")
+		font_menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.FormatTextItalic), "Italic", self.editor.toggle_italic, shortcut="Ctrl+I")
+		font_menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.FormatTextStrikethrough), "Strikethrough", self.editor.toggle_strikethrough, shortcut="Shift+Ctrl+X")
+		font_menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.FormatTextUnderline), "Underline", self.editor.toggle_underline, shortcut="Ctrl+U")
+		font_menu.addAction("Clear formatting", self.editor.clear_formatting, shortcut="Shift+Ctrl+F")
+		font_menu.addSeparator()
+		self.monospace_menu_action = font_menu.addAction("Fixed-width font", self.editor.toggle_monospace)
+		self.monospace_menu_action.setCheckable(True)
+		font_menu.addSeparator()
+		font_menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.ZoomIn), "Larger font", self.editor.zoom_in, shortcut="Ctrl++")
+		font_menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.ZoomOut), "Smaller font", self.editor.zoom_out, shortcut="Ctrl+-")
+		font_menu.addAction("Reset font size", lambda: self.editor.set_font_size_offset(0), shortcut="Ctrl+0")
+		font_button.setMenu(font_menu)
+		self.font_menu = font_menu
 
 		# Delete-button
 		delete_button = QPushButton("", self.header)
@@ -138,11 +168,9 @@ class StickyNote(QWidget):
 		# Header layout
 		header_layout.addWidget(self.title_stack)
 		header_layout.addStretch()
+		header_layout.addWidget(font_button)
 		header_layout.addWidget(color_button)
 		header_layout.addWidget(delete_button)
-
-		# Main note text editor
-		self.editor = NoteEditor(text, self.container, font_size_offset, app.get_monospace_font())
 
 		# Footer has grip handle for resizing the note
 		self.footer = QWidget(self.container)
@@ -249,7 +277,7 @@ class StickyNote(QWidget):
 			if watched == self.title_editor and self.editing_title:
 				self.title_editor.editingFinished.emit()
 				return True
-			elif watched == self.editor:
+			elif watched == self.editor and not self.font_menu.isVisible() and not self.color_menu.isVisible():
 				self.editor.clear_selection()
 
 		# ..but cancel when pressing ESC
@@ -296,6 +324,7 @@ class StickyNote(QWidget):
 
 		if monospace:
 			note.editor.set_monospace(True)
+			note.monospace_menu_action.setChecked(True)
 
 		if color_index >= 0:
 			note.change_color(ColorPickerMenu.get_color_for_index(color_index), color_index)

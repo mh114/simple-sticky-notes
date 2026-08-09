@@ -9,6 +9,7 @@ Used under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
 ## From [Bootstrap Icons][bootstrap]:
 Used under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
+- `fonts.svg`
 - `stickies-fill.svg`
 - `stickies.svg`
 
