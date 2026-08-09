@@ -12,7 +12,7 @@ This app was partially inspired by [**Linux Mint** Sticky](https://github.com/li
 - One click on the system tray icon to hide/show notes!
 - Global font name & size can be set through the [config-file](#configuration-file)
 	- Text size can be adjusted individually per sticky note as needed
-- Somewhat functional [Emoji-support](#emoji-support)
+- [Emoji-support](#emoji-support)
 - Works in KDE, but alas, through XWayland for now... 😔
 	- I ran into issues with note/window positioning on Wayland and ultimately ended up side-stepping the issue by running in XWayland 🫣
 	- I _have_ some ideas on how to realise native Wayland support, but it remains to be seen if I can be bothered to try them.. 🤔
@@ -56,20 +56,20 @@ Go to **KDE System Settings** → **Window Rules** and add a new rule. Configure
 ![Window rule setup](./img/kde_window_rule.webp)
 
 ### Emoji-support
-Emojis in notes will work, _if_ **Qt** has support for rendering using the configured font. See below on emoji font configuration. For me, I found that the Windows emoji font (_Segoe UI Emoji_) worked, but some free alternatives did not. Your mileage may vary — it may be a system configuration issue. 🤔
+Emojis in notes will work, _if_ **Qt** has support for rendering using the configured font. See below on emoji font configuration. This app comes bundled with the [Noto Color Emoji](https://github.com/googlefonts/noto-emoji)-font, which is set to be preferred by default. Note that the newer Noto Emoji font (`Noto-COLRv1.ttf` that comes bundled with Fedora, for example) currently fails to render in **Qt** font engine. Other emoji fonts can be used by changing the configuration file, see below.
 
 ## Configuration file
 After the first run, the configuration file is created at `~/.config/simple-sticky-notes/simple-sticky-notes.conf`. Here are the options explained:
 
 |section | setting | default value | explanation|
 |--------|---------|---------------|-----|
-|`[fonts]` |  `font_name` |  _(empty)_ | Font family name to use for all texts, e.g. `Inter` or `Noto Sans`. Empty value means use the system default font.|
+|**`[fonts]`** |  `font_name` |  _(empty)_ | Font family name to use for all texts, e.g. `Inter` or `Noto Sans`. Empty value means use the system default font.|
 || `font_size` | `-1` | Font point size, e.g. 14, `-1` means the system default. |
 ||`monospace_font_name`| _(empty)_ | Fixed-with/monospace font family name to use for notes that have fixed-width enabled. E.g. `Noto Sans Mono`. Empty value means use the system default monospace font.|
-||`emoji_font_names`|`Noto Color Emoji, Twitter Color Emoji, Segoe UI Emoji`| Comma-separated list of emoji font family names. Order matters.|
-|`[notes]`|`default_note_title`|`Note`|Default title for new notes. Can be left empty.|
+||`emoji_font_names`|`Noto Color Emoji, Segoe UI Emoji`| Comma-separated list of emoji font family names. Order matters, first found font is used. Note that Qt seems to have issues rendering some emoji fonts.|
+|**`[notes]`**|`default_note_title`|`Note`|Default title for new notes. Can be left empty.|
 ||`color_icon_name`|`droplet`|Icon for the color picker: can be set to `brush`, `droplet`, `paintbrush` or `palette` for a different icon. (Only because I couldn't decide which icon is the best!)|
-
+||`hide_on_startup`|`false`|Whether to hide notes on app startup. **NOTE:** Command-line argument `--stealth` or `-s` can also be used to force notes stay hidden, regardless of this setting.|
 
 ## TODO-list
 - [ ] Fixed-width/monospace font option per sticky note
@@ -77,4 +77,5 @@ After the first run, the configuration file is created at `~/.config/simple-stic
 - [ ] Investigate automatic KWin rule setup
 - [ ] Periodic autosave? (need to detect if notes are "dirty")
 	- Or trigger save after typing / making changes (with some delay)
+- [ ] Maybe detect URLs from notes and make them clickable
 - [ ] ...

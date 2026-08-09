@@ -1,5 +1,6 @@
 import json
 import os
+from pathlib import Path
 import sys
 
 # Force XWayland backend, needs XCB
@@ -23,6 +24,8 @@ APP_ORG = "MHGames"
 APP_VERSION = "0.1"
 NOTES_FILENAME = "notes.json"
 SETTINGS_FILENAME = f"{APP_NAME_PATH}.conf"
+
+FONTS_PATH = Path(__file__).parent / "fonts"
 
 
 class SimpleStickyNotes(NotesProtocol):
@@ -79,8 +82,7 @@ class SimpleStickyNotes(NotesProtocol):
 
 	def setup_fonts(self):
 		# Set global font and emoji font families
-		# FIXME: Any way to get Noto or Twitter emoji working!?
-		#        QFontDatabase.addApplicationFont("fonts/TwitterColorEmoji-SVGinOT.ttf")
+		QFontDatabase.addApplicationFont(str(FONTS_PATH / "NotoColorEmoji.ttf"))
 		QFontDatabase.setApplicationEmojiFontFamilies(self.emoji_font_names)
 		app_font = QFont(QFontDatabase.systemFont(QFontDatabase.SystemFont.GeneralFont))
 		if self.font_name and QFontDatabase.hasFamily(self.font_name):
@@ -96,7 +98,7 @@ class SimpleStickyNotes(NotesProtocol):
 		if self.font_size > 0:
 			self.monospace_font.setPointSize(self.font_size)
 
-		# Menu font
+		# Menu font (TODO: should use SystemFont.MenuFont, but not yet available)
 		self.menu_font = QFont(QFontDatabase.systemFont(QFontDatabase.SystemFont.GeneralFont))
 		self.menu_font.setPointSize(app_font.pointSize() - 2)
 
@@ -110,6 +112,10 @@ class SimpleStickyNotes(NotesProtocol):
 		menu = QMenu()
 		menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.DocumentNew), "Add new note", self.create_note)
 		menu.addSeparator()
+		hide_on_startup_action = menu.addAction("Hide notes on startup", self.toggle_hide_on_startup)
+		hide_on_startup_action.setCheckable(True)
+		hide_on_startup_action.setChecked(self.settings.value("notes/hide_on_startup", False, type=bool))
+		menu.addSeparator()
 		menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.HelpAbout),"About this app...", self.on_about)
 		menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.ApplicationExit), "Quit", self.quit_app)
 		self.tray.setContextMenu(menu)
@@ -118,6 +124,9 @@ class SimpleStickyNotes(NotesProtocol):
 		self.tray.activated.connect(self.on_tray_activated)
 		self.tray.show()
 
+		if hide_on_startup_action.isChecked():
+			self.stealth_mode = True
+
 
 	def on_tray_activated(self, reason):
 		if reason == QSystemTrayIcon.ActivationReason.Trigger:  # Left click
@@ -125,6 +134,11 @@ class SimpleStickyNotes(NotesProtocol):
 			if self.are_notes_visible:
 				self.save_notes()
 			self.toggle_notes()
+
+
+	def toggle_hide_on_startup(self):
+		hide = not self.settings.value("notes/hide_on_startup", False, type=bool)
+		self.settings.setValue("notes/hide_on_startup", hide)
 
 
 	def on_about(self):
@@ -191,10 +205,11 @@ class SimpleStickyNotes(NotesProtocol):
 			self.settings.setValue("fonts/font_size", -1)
 			self.settings.setValue("fonts/font_name", "")
 			self.settings.setValue("fonts/monospace_font_name", "")
-			self.settings.setValue("fonts/emoji_font_names", ["Noto Color Emoji", "Twitter Color Emoji", "Segoe UI Emoji"])
+			self.settings.setValue("fonts/emoji_font_names", ["Noto Color Emoji", "Segoe UI Emoji"])
 
 			self.settings.setValue("notes/default_title", "Note")
 			self.settings.setValue("notes/color_icon_name", "droplet") # "droplet|paintbrush|brush|palette"
+			self.settings.setValue("notes/hide_on_startup", False)
 			self.settings.sync()
 
 		self.font_size = int(self.settings.value("fonts/font_size", -1))
