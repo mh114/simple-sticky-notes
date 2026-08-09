@@ -248,7 +248,7 @@ class SimpleStickyNotes(NotesProtocol):
 					if not self.stealth_mode:
 						note.show()
 					self.notes.append(note)
-					print(f"- Loaded note #{note_data["i"]} titled '{note_data["title"]}'")
+					#print(f"- Loaded note #{note_data["i"]} titled '{note_data["title"]}'")
 
 				if self.notes:
 					self.notes[-1].send_to_front()

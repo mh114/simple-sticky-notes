@@ -73,10 +73,9 @@ After the first run, the configuration file is created at `~/.config/simple-stic
 ||`hide_on_startup`|`false`|Whether to hide notes on app startup. **NOTE:** Command-line argument `--stealth` or `-s` can also be used to force notes stay hidden, regardless of this setting.|
 
 ## TODO-list
-- [ ] Fixed-width/monospace font option per sticky note
 - [ ] Note scrollbar should be styled to look nicer
 - [ ] Investigate automatic KWin rule setup
 - [ ] Periodic autosave? (need to detect if notes are "dirty")
 	- Or trigger save after typing / making changes (with some delay)
 - [ ] Maybe detect URLs from notes and make them clickable
-- [ ] ...
+- [x] Fixed-width/monospace font option per sticky note

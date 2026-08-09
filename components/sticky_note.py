@@ -97,11 +97,13 @@ class StickyNote(QWidget):
 
 		# Title label (uses ellipsis)
 		self.title = EllipsisLabel(title, self.header)
+		self.title.setFont(app.get_app_font())
 		self.title.setObjectName("title")
 		self.setWindowTitle(title)
 
 		# Stacked title editor
 		self.title_editor = QLineEdit(title, self.header)
+		self.title_editor.setFont(app.get_app_font())
 		self.title_editor.setPlaceholderText("Note title...")
 		self.title_editor.editingFinished.connect(self.on_title_edit_finished)
 		self.editing_title = False
