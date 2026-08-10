@@ -4,8 +4,7 @@ A quite simple sticky notes application, nothing more.
 ## Short origin story
 This app was partially inspired by [**Linux Mint** Sticky](https://github.com/linuxmint/sticky); as I distro-hopped from Mint to **Fedora KDE** I found myself wanting a similar _sticky notes_ app, that would allow freeform note placement and, crucially, one click toggling of notes. I didn't find a suitable replacement so I decided to write one myself!
 
-**TODO: ADD SCREENSHOT(S)**
-
+![Screenshot of sticky notes](./img/screenshot1.webp)
 
 ## Features
 - Sticky notes of different colors, basic rich-text support (**bold**, _italic_, ~~strikethrough~~ and <ins>underline</ins>)

@@ -167,7 +167,7 @@ class StickyNote(QWidget):
 
 		# Header layout
 		header_layout.addWidget(self.title_stack)
-		header_layout.addStretch()
+		# header_layout.addStretch()
 		header_layout.addWidget(font_button)
 		header_layout.addWidget(color_button)
 		header_layout.addWidget(delete_button)
