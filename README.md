@@ -22,7 +22,17 @@ This app was partially inspired by [**Linux Mint** Sticky](https://github.com/li
 
 
 ## Install / setup notes
-After cloning the code, run these commands to create the virtual environment, activate it and install dependencies:
+After cloning the code, you have two options.
+1. You can install the **PySide6** packages for your system and use your system **Python** installation (which is likely already installed; install Python 3 if not) to run the app. This way the app menus follow your system theme.
+	- For example on **Fedora**:  
+	`sudo dnf install python3-pyside6` to install PySide.  
+	
+	  Then launch with:  
+	`python3 /PATH/TO/simple-sticky-notes/simple_sticky_notes.py`
+2. Alternatively, you can setup a Python virtual environment that contains the Python-instance along with the dependencies. App menus may look worse than your system theme, but you can [configure](#configuration-file) the app to style the menus itself.
+
+### Setup virtual environment
+Run these commands to create the virtual environment, activate it and install dependencies:
 ```
 python3 -m venv .venv
 source .venv/bin/activate
@@ -31,9 +41,12 @@ pip install -r requirements.txt
 ```
 
 ### To launch the app:
+- using system libraries: `python3 /PATH/TO/simple-sticky-notes/simple_sticky_notes.py`
+
 - while within `.venv`-shell: `python3 simple_sticky_notes.py`
 	- to exit `.venv`-shell: `deactivate`
-- normally (i.e. use the Python from inside the `.venv`):  
+
+- normally, but using the Python-instance from inside the `.venv`:  
   ```
   /PATH/TO/simple-sticky-notes/.venv/bin/python3 /PATH/TO/simple-sticky-notes/simple_sticky_notes.py
   ```
@@ -77,8 +90,9 @@ After the first run, the configuration file is created at `~/.config/simple-stic
 
 
 ## TODO-list
+- [ ] Write about making a `.desktop`-file
 - [ ] Note scrollbar should be styled to look nicer
-- [ ] Note text format menu should be styled to look nicer
+- [ ] Note text format menu should be styled to look nicer (but it should be optional/configurable)
 - [ ] Periodic autosave? (need to detect if notes are "dirty")
 	- Or trigger save after typing / making changes (with some delay)
 - [ ] Maybe detect URLs from notes and make them clickable
