@@ -6,18 +6,21 @@ This app was partially inspired by [**Linux Mint** Sticky](https://github.com/li
 
 **TODO: ADD SCREENSHOT(S)**
 
+
 ## Features
 - Sticky notes of different colors, basic rich-text support (**bold**, _italic_, ~~strikethrough~~ and <ins>underline</ins>)
 - Notes can have optional title (_double-click_ to edit)
 - One click on the system tray icon to hide/show notes!
 - Global font name & size can be set through the [config-file](#configuration-file)
 	- Text size can be adjusted individually per sticky note as needed
+	- Sticky notes can be set to use fixed-width/monospace font
 - ✅ [Emoji-support](#emoji-support)
-- Works in KDE, but alas, through XWayland for now... 😔
-	- I ran into issues with note/window positioning on Wayland and ultimately ended up side-stepping the issue by running in XWayland 🫣
+- Designed for **KDE**, however...
+	- I ran into issues with note/window positioning on **Wayland** and ultimately ended up side-stepping the issue by running in **XWayland** 🫣
 	- I _have_ some ideas on how to realise native Wayland support, but it remains to be seen if I can be bothered to try them.. 🤔
 	- Also needs a _KDE Window Rule_ to avoid stickies from showing up in taskbar / task switcher (→ see [installation notes below](#kde-window-rule-or-how-to-avoid-stickies-being-all-over-the-taskbar))
 - Written in **Python** using **PySide6**/**Qt**
+
 
 ## Install / setup notes
 After cloning the code, run these commands to create the virtual environment, activate it and install dependencies:
@@ -43,13 +46,12 @@ In any case, for proper UX, the stickies should be hidden from task switchers. T
 
 
 #### Automatic setup:
-**TODO: IMPLEMENT THIS**
-
-On the first run, **Simple Sticky Notes** offers to add the window rule for you, unless it already exists. Accept and it should do the trick.
+On the first run, **(Simple) Sticky Notes** offers to add the window rule for you (by modifying `~/.config/kwinrulesrc`), unless it already exists. Accept and it should do the trick. Before changing anything, a backup is first made to `~/.config/kwinrulesrc.bak`.
 
 #### Manual setup:
-Go to **KDE System Settings** → **Window Rules** and add a new rule. Configure it like below:
-- Window class, match: `simple-sticky-notes`
+Go to **KDE System Settings** → **Window Rules** and add select _"Import..."_ Pick the included `sticky_notes.kwinrule`. You can also manually add a new rule and configure it like below:
+- Window class, exact match: `simple-sticky-notes`
+- Window title, substring match: `StickyNote:`
 - Virtual desktops: **Force, All desktops** (this is optional)
 - Skip taskbar: **Force, Yes**
 - Skip pager: **Force, Yes**
@@ -58,6 +60,7 @@ Go to **KDE System Settings** → **Window Rules** and add a new rule. Configure
 
 ### Emoji-support
 Emojis in notes will work, _if_ **Qt** has support for rendering using the configured font. See below on emoji font configuration. This app comes bundled with the [Noto Color Emoji](https://github.com/googlefonts/noto-emoji)-font, which is set to be preferred by default. Note that the newer Noto Emoji font (`Noto-COLRv1.ttf` that comes bundled with Fedora, for example) currently fails to render in **Qt** font engine. Other emoji fonts can be used by changing the configuration file, see below.
+
 
 ## Configuration file
 After the first run, the configuration file is created at `~/.config/simple-sticky-notes/simple-sticky-notes.conf`. Here are the options explained:
@@ -72,10 +75,12 @@ After the first run, the configuration file is created at `~/.config/simple-stic
 ||`color_icon_name`|`droplet`|Icon for the color picker: can be set to `brush`, `droplet`, `paintbrush` or `palette` for a different icon. (Only because I couldn't decide which icon is the best!)|
 ||`hide_on_startup`|`false`|Whether to hide notes on app startup. **NOTE:** Command-line argument `--stealth` or `-s` can also be used to force notes stay hidden, regardless of this setting.|
 
+
 ## TODO-list
 - [ ] Note scrollbar should be styled to look nicer
-- [ ] Investigate automatic KWin rule setup
+- [ ] Note text format menu should be styled to look nicer
 - [ ] Periodic autosave? (need to detect if notes are "dirty")
 	- Or trigger save after typing / making changes (with some delay)
 - [ ] Maybe detect URLs from notes and make them clickable
-- [x] Fixed-width/monospace font option per sticky note
+- [x] **DONE:** Investigate automatic KWin rule setup
+- [x] **DONE:** Fixed-width/monospace font option per sticky note

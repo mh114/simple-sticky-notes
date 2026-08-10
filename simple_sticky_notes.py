@@ -9,11 +9,11 @@ os.environ["QT_QPA_PLATFORM"] = "xcb"
 from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMessageBox
 from PySide6.QtCore import QCommandLineOption, QCommandLineParser, QSettings, QSize, QStandardPaths, QTimer
 from PySide6.QtGui import QFont, QFontDatabase, QIcon, Qt
-from PySide6.QtDBus import QDBusInterface, QDBusConnection
 
 from components.icon_cache import IconCache
 from components.sticky_note import StickyNote
 from components.notes_protocol import NotesProtocol
+from components.kwin_window_rules import KWinWindowRules
 
 
 APP_NAME_PATH = "simple-sticky-notes"
@@ -29,7 +29,7 @@ FONTS_PATH = Path(__file__).parent / "fonts"
 
 
 class SimpleStickyNotes(NotesProtocol):
-	""" Main application class """
+	""" Main application class: manages the notes and app config + system tray icon """
 
 	def __init__(self):
 		self.app = QApplication(sys.argv)
@@ -44,8 +44,7 @@ class SimpleStickyNotes(NotesProtocol):
 		self.process_command_line_args(self.app)
 		first_run = self.load_config()
 		if first_run:
-			#self.register_kwin_rules()
-			pass
+			QTimer.singleShot(0, lambda: KWinWindowRules.check_kwin_window_rules(APP_DISPLAY_NAME, self))
 
 		#icon = QIcon.fromTheme("note-new")
 		icon = IconCache.load_icon_svg("stickies.svg", size=QSize(64,64), scale=0.9, color=Qt.GlobalColor.white)
@@ -56,7 +55,7 @@ class SimpleStickyNotes(NotesProtocol):
 
 		# Load saved notes or create initial note if nothing is loaded
 		self.notes: list[StickyNote] = []
-		self.are_notes_visible = True
+		self._are_notes_visible = True
 		self._is_quitting = False
 		self.load_notes()
 		if not self.notes:
@@ -74,6 +73,7 @@ class SimpleStickyNotes(NotesProtocol):
 		parser.addVersionOption()
 
 		parser.addOption(QCommandLineOption(["s", "stealth"], "Stealth-mode: hides notes on startup."))
+		# TODO: Add option to (re)run the KDE Window Rule -checker
 		parser.process(app)
 
 		self.stealth_mode = parser.isSet("stealth")
@@ -127,9 +127,9 @@ class SimpleStickyNotes(NotesProtocol):
 
 
 	def on_tray_activated(self, reason):
-		if reason == QSystemTrayIcon.ActivationReason.Trigger:  # Left click
+		if reason == QSystemTrayIcon.ActivationReason.Trigger: # Left click
 			# If hiding notes, autosave
-			if self.are_notes_visible:
+			if self._are_notes_visible:
 				self.save_notes()
 			self.toggle_notes()
 
@@ -153,13 +153,7 @@ class SimpleStickyNotes(NotesProtocol):
 
 
 	def toggle_notes(self):
-		self.set_notes_visible(not self.are_notes_visible)
-
-
-	def set_notes_visible(self, visible: bool):
-		self.are_notes_visible = visible
-		for note in self.notes:
-			note.setVisible(visible)
+		self.set_notes_visible(not self._are_notes_visible)
 
 
 	def create_note(self):
@@ -167,7 +161,7 @@ class SimpleStickyNotes(NotesProtocol):
 					text = f"Note #{len(self.notes) + 1}",
 					title = self.settings.value("notes/default_title"),
 					app = self)
-		if not self.are_notes_visible:
+		if not self._are_notes_visible:
 			self.toggle_notes()
 
 		# Center on screen
@@ -262,6 +256,16 @@ class SimpleStickyNotes(NotesProtocol):
 
 	# Implement NotesProtocol:
 	#---------------------------
+	def set_notes_visible(self, visible: bool):
+		self._are_notes_visible = visible
+		for note in self.notes:
+			note.setVisible(visible)
+
+
+	def are_notes_visible(self) -> bool:
+		return self._are_notes_visible
+
+
 	def delete_note(self, note: StickyNote):
 		# TODO: Perhaps should keep the last deleted note saved and allow undeleting it
 		if note in self.notes:
@@ -296,29 +300,9 @@ class SimpleStickyNotes(NotesProtocol):
 	def get_monospace_font(self) -> QFont:
 		return self.monospace_font
 
-
 	def get_menu_font(self) -> QFont:
 		return self.menu_font
 	#---------------------------
-
-
-	def register_kwin_rules(self):
-		bus = QDBusConnection.sessionBus()
-		kwin_interface = QDBusInterface("org.kde.KWin", "/KWin", "org.kde.KWin", bus)
-		if kwin_interface.isValid() and bus.isConnected():
-			# TODO: Offer to register KWin rules to hide notes from taskbar etc.
-			print("KWIN dbus is OK!")
-			reply = QMessageBox.question(None,
-					"Add window rule",
-					"Add KWin window rule to keep sticky notes from appearing in taskbar and task switcher?",
-					QMessageBox.Yes | QMessageBox.No,
-					QMessageBox.Yes)
-			if reply == QMessageBox.Yes:
-				# TODO: Add kwin rules, perhaps add them to [General] with UUID, so they are visible in KDE settings
-				result = kwin_interface.call("reconfigure")
-				print(f"Added window rules")
-			else:
-				print("Need to add window rule manually!")
 
 
 
