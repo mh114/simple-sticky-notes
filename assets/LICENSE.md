@@ -17,6 +17,7 @@ Used under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
 ## Made by Mika Halttunen:
 Placed under MIT license like the rest of this application.
 - `delete-note-mh.svg`
+- `size-grip-mh.svg`
 
 
 [fontawesome]: https://fontawesome.com/

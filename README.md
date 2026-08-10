@@ -18,7 +18,7 @@ This app was partially inspired by [**Linux Mint** Sticky](https://github.com/li
 - Designed for **KDE**, however...
 	- I ran into issues with note/window positioning on **Wayland** and ultimately ended up side-stepping the issue by running in **XWayland** 🫣
 	- I _have_ some ideas on how to realise native Wayland support, but it remains to be seen if I can be bothered to try them.. 🤔
-	- Also needs a _KDE Window Rule_ to avoid stickies from showing up in taskbar / task switcher (→ see [installation notes below](#kde-window-rule-or-how-to-avoid-stickies-being-all-over-the-taskbar))
+	- Also needs a _KDE Window Rule_ to avoid stickies from showing up in taskbar / task switcher (→ see [installation notes below](#kde-window-rule-or-how-to-avoid-stickies-being-all-over-the-taskbar); the app can do this automatically or user can configure the rule manually)
 - Written in **Python** using **PySide6**/**Qt**
 
 
@@ -38,6 +38,7 @@ pip install -r requirements.txt
   ```
   /PATH/TO/simple-sticky-notes/.venv/bin/python3 /PATH/TO/simple-sticky-notes/simple_sticky_notes.py
   ```
+- Launch with `--help` to see available command-line arguments, but they're not really needed for general usage.
 
 ### KDE Window rule, or: _how to avoid stickies being all over the taskbar?_
 If your desktop is using **Wayland**, the sticky notes will likely show up as separate windows on the taskbar (because that's what they are, technically). For **X11**-based desktops, chances are they work as is, but I've not tested it personally.
@@ -82,5 +83,6 @@ After the first run, the configuration file is created at `~/.config/simple-stic
 - [ ] Periodic autosave? (need to detect if notes are "dirty")
 	- Or trigger save after typing / making changes (with some delay)
 - [ ] Maybe detect URLs from notes and make them clickable
+- [x] **DONE:** Better icon for resize-handle
 - [x] **DONE:** Investigate automatic KWin rule setup
 - [x] **DONE:** Fixed-width/monospace font option per sticky note

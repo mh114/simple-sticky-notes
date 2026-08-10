@@ -52,3 +52,7 @@ class IconCache:
 			# print("Loaded new icon to cache: " + cache_path)
 
 		return icon
+
+
+	def get_icon_qss_url(filename: str) -> str:
+		return f"url({str(ASSETS_PATH / filename)})"

@@ -22,8 +22,8 @@
      inkscape:deskcolor="#d1d1d1"
      showgrid="true"
      inkscape:zoom="1.259534"
-     inkscape:cx="188.56181"
-     inkscape:cy="371.56601"
+     inkscape:cx="188.95877"
+     inkscape:cy="371.56599"
      inkscape:window-width="2560"
      inkscape:window-height="1356"
      inkscape:window-x="0"
@@ -45,7 +45,6 @@
        enabled="true"
        visible="true" />
   </sodipodi:namedview>
-  <!--!Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
   <path
      style="opacity:1;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke-width:8;stroke-linecap:round;paint-order:stroke fill markers"
      d="m 100,180 c 13.33333,-40 40,-66.66667 80,-80 L 320,240 460,100 c 40,13.33333 66.66667,40 80,80 L 400,320 540,460 c -13.33333,40 -40,66.66667 -80,80 L 320,400 180,540 C 140,526.66667 113.33333,500 100,460 L 240,320 Z"

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 16 16"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="size-grip-mh.svg"
+   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
+   width="16"
+   height="16"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="true"
+     inkscape:zoom="40.305088"
+     inkscape:cx="3.4362907"
+     inkscape:cy="5.557611"
+     inkscape:window-width="1665"
+     inkscape:window-height="1266"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg1">
+    <inkscape:grid
+       id="grid1"
+       units="px"
+       originx="0"
+       originy="0"
+       spacingx="0.5"
+       spacingy="0.5"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="5"
+       enabled="true"
+       visible="true" />
+  </sodipodi:namedview>
+  <path
+     id="path1"
+     style="opacity:1;fill:#b0b0b0;fill-opacity:0.38670301;fill-rule:evenodd;stroke-width:0.289855;stroke-linecap:round;paint-order:stroke fill markers"
+     d="M 14.197266,0.320313 14,0.5175786 V 2.6914068 L 2.6914061,14 H 0.517578 l -0.234375,0.234376 0.2910156,0.289062 H 2.892578 L 14.486328,2.929688 V 0.6113286 Z m 0,5.796875 L 14,6.3144536 V 8.4882818 L 8.4882811,14 H 6.314453 l -0.234375,0.234376 0.2910156,0.289062 H 8.689453 L 14.486328,8.726563 V 6.4082036 Z m 0,5.796875 L 14,12.111329 V 14 h -1.888672 l -0.234375,0.234376 0.291016,0.289062 h 2.318359 v -2.318359 z" />
+  <path
+     id="rect8"
+     style="fill:#000000;fill-opacity:0.40571445;fill-rule:evenodd;stroke:none;stroke-width:11.5942;stroke-linecap:round;stroke-opacity:0.15618;paint-order:stroke fill markers"
+     d="M 13.999461,0.5175504 0.5172383,13.999774 H 2.6911514 L 13.999461,2.6914635 Z m 0,5.7971015 -7.6851212,7.6851221 H 8.4882521 L 13.999461,8.4885661 Z m 0,5.7971021 -1.88802,1.88802 h 1.88802 z"
+     sodipodi:nodetypes="cccccccccccccc" />
+</svg>

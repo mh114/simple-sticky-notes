@@ -176,6 +176,7 @@ class StickyNote(QWidget):
 		self.footer = QWidget(self.container)
 		self.footer.setObjectName("footer")
 		size_grip = QSizeGrip(self.footer)
+		size_grip.setStyleSheet(f"QSizeGrip {{ image: {IconCache.get_icon_qss_url("size-grip-mh.svg")}; }}")
 		footer_layout = QHBoxLayout(self.footer)
 		footer_layout.setContentsMargins(0, 0, 2, 2)
 		footer_layout.addStretch()
