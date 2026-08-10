@@ -219,7 +219,7 @@ class StickyNote(QWidget):
 			return
 		self.title.setText(self.title_editor.text())
 		self.title_stack.setCurrentWidget(self.title)
-		self.setWindowTitle(self.title_editor.text())
+		self.setWindowTitle(f"StickyNote: {self.title_editor.text()}")
 
 
 	def send_to_front(self):
