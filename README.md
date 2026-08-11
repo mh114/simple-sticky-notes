@@ -61,7 +61,7 @@ In any case, for proper UX, the stickies should be hidden from task switchers. T
 
 
 #### Automatic setup:
-On the first run, **(Simple) Sticky Notes** offers to add the window rule for you (by modifying `~/.config/kwinrulesrc`), unless it already exists. Accept and it should do the trick. Before changing anything, a backup is first made to `~/.config/kwinrulesrc.bak`.
+On the first run, **(Simple) Sticky Notes** offers to add the window rule for you (by modifying `~/.config/kwinrulesrc`), unless it already exists. Accept and it should do the trick. Before changing anything, a backup is first made to `~/.config/kwinrulesrc.bak`. You can rerun the window rule check later with `--check-window-rule` command-line argument.
 
 #### Manual setup:
 Go to **KDE System Settings** → **Window Rules** and add select _"Import..."_ Pick the included `sticky_notes.kwinrule`. You can also manually add a new rule and configure it like below:
@@ -94,11 +94,11 @@ After the first run, the configuration file is created at `~/.config/simple-stic
 ## TODO-list
 List of potential changes to be made, or features to be added. No guarantees, though.
 - [ ] Write about making a `.desktop`-file
-- [ ] Note scrollbar should be styled to look nicer
 - [ ] Periodic autosave?
 	- Or trigger save after typing / making changes (with some delay)
 	- [ ] Need to detect if notes are "dirty", prevent excess saving if nothing has changed
 - [ ] Maybe detect URLs from notes and make them clickable
+- [x] **DONE:** Note scrollbar should be styled to look nicer
 - [x] **DONE:** Note text format menu should be styled to look nicer (custom style applied when ran inside `.venv`)
 - [x] **DONE:** Better icon for resize-handle
 - [x] **DONE:** Investigate automatic KWin rule setup

@@ -13,6 +13,36 @@ class NoteEditor(QTextEdit):
 		self.is_monospace = False
 		self.set_font_size_offset(font_size_offset)
 		self.setTabStopDistance(4 * 8)
+
+		self.setStyleSheet("""
+			QTextEdit QScrollBar {
+				background: transparent;
+				width: 18px;
+				margin: 4px;
+				border: none;
+			}
+			QTextEdit QScrollBar::handle {
+				background: rgba(0, 0, 0, 0.2);
+				min-height: 22px;
+				border-radius: 3px;
+			}
+			QTextEdit QScrollBar::handle:hover {
+				background: rgba(0, 0, 0, 0.4);
+			}
+			QTextEdit QScrollBar::handle:pressed {
+				background: rgba(0, 0, 0, 0.6);
+			}
+			QTextEdit QScrollBar::sub-line, QTextEdit QScrollBar::add-line {
+				background: none;
+				border: none;
+				width: 0px;
+				height: 0px;
+			}
+			QTextEdit QScrollBar::add-page, QTextEdit QScrollBar::sub-page {
+				background: none;
+			}
+		""")
+
 		if text:
 			self.set_rich_text(text)
 
