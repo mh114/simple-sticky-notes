@@ -1,6 +1,7 @@
 import json
 import os
 from pathlib import Path
+import subprocess
 import sys
 
 
@@ -76,11 +77,14 @@ class SimpleStickyNotes(NotesProtocol):
 
 		parser.addOption(QCommandLineOption(["s", "stealth"], "Stealth-mode: hides notes on startup."))
 		parser.addOption(QCommandLineOption(["c", "check-window-rule"], "Check if KDE Window Rule exists and offer to add it, if it does not."))
+		parser.addOption(QCommandLineOption(["i", "install-desktop-file"], f"Generates a .desktop file so that '{APP_DISPLAY_NAME}' appears in the system application launcher."))
 		#parser.addOption(QCommandLineOption(["import-from-mint-sticky"], "Import notes from Linux Mint Sticky."))
 		parser.process(app)
 
 		self.stealth_mode = parser.isSet("stealth")
 		self.check_window_rule = parser.isSet("check-window-rule")
+		if parser.isSet("install-desktop-file"):
+			self._install_desktop_file()
 		#if parser.isSet("import-from-mint-sticky"):
 		# 	NotesImporter.import_mint_sticky_notes()
 		# 	sys.exit(0)
@@ -261,11 +265,13 @@ class SimpleStickyNotes(NotesProtocol):
 					if not self.stealth_mode:
 						note.show()
 					else:
+						note.setWindowOpacity(0.0)
+						note.show()
 						note.showMinimized()
 					
 					self.notes.append(note)
 					#print(f"- Loaded note #{note_data["i"]} titled '{note_data["title"]}'")
-
+					
 				if self.notes:
 					self.notes[-1].send_to_front()
 				
@@ -343,6 +349,40 @@ class SimpleStickyNotes(NotesProtocol):
 	def get_menu_font(self) -> QFont:
 		return self.menu_font
 	#---------------------------
+
+
+	def _install_desktop_file(self):
+		app_path = Path(__file__).parent.resolve()
+		main_script_path = Path(__file__).resolve()
+
+		# .venv or system Python?
+		if sys.prefix != sys.base_prefix:
+			python = app_path / ".venv" / "bin" / "python3" # .venv
+		else:
+			python = "python3"
+
+		desktop_files_path = Path.home() / ".local" / "share" / "applications"
+		desktop_files_path.mkdir(parents=True, exist_ok=True)
+		desktop_file = desktop_files_path / f"{APP_NAME_PATH}.desktop"
+
+		desktop_file.write_text(f"""[Desktop Entry]
+Type=Application
+Version={APP_VERSION}
+Name={APP_DISPLAY_NAME}
+GenericName=Sticky notes application
+Comment={APP_DESCRIPTION}
+Exec={python} {main_script_path}
+Path={app_path}
+Icon={app_path / "assets" / "stickies.svg"}
+Terminal=false
+Categories=Utility;TextEditor;
+Keywords=sticky;note;notes;
+StartupWMClass={APP_NAME_PATH}
+""")
+
+		print(f"Generated .desktop file to '{desktop_file}'")
+		print("Updating desktop database..")
+		sys.exit(subprocess.run(["update-desktop-database", str(desktop_files_path)]).returncode)
 
 
 
