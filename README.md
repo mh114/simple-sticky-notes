@@ -29,7 +29,7 @@ After cloning the code, you have two options.
 	
 	  Then launch with:  
 	`python3 /PATH/TO/simple-sticky-notes/simple_sticky_notes.py`
-2. Alternatively, you can [setup a Python virtual environment](#setup-virtual-environment) that contains the Python-instance along with the dependencies. App menus may look worse than your system theme, but you can [configure](#configuration-file) the app to style the menus itself.
+2. Alternatively, you can [setup a Python virtual environment](#setup-virtual-environment) that contains the Python-instance along with the dependencies. App menus look different as system theme is not usable.
 
 ### Setup virtual environment
 Run these commands to create the virtual environment, activate it and install dependencies:
@@ -92,12 +92,13 @@ After the first run, the configuration file is created at `~/.config/simple-stic
 
 
 ## TODO-list
+List of potential changes to be made, or features to be added. No guarantees, though.
 - [ ] Write about making a `.desktop`-file
 - [ ] Note scrollbar should be styled to look nicer
-- [ ] Note text format menu should be styled to look nicer (but it should be optional/configurable)
 - [ ] Periodic autosave? (need to detect if notes are "dirty")
 	- Or trigger save after typing / making changes (with some delay)
 - [ ] Maybe detect URLs from notes and make them clickable
+- [x] **DONE:** Note text format menu should be styled to look nicer (custom style applied when ran inside `.venv`)
 - [x] **DONE:** Better icon for resize-handle
 - [x] **DONE:** Investigate automatic KWin rule setup
 - [x] **DONE:** Fixed-width/monospace font option per sticky note

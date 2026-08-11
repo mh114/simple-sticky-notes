@@ -1,3 +1,5 @@
+import sys
+
 from PySide6.QtWidgets import (
 	QMenu, QToolButton, QWidget, QPushButton, QLineEdit, QVBoxLayout, QHBoxLayout,
 	QMessageBox, QGraphicsDropShadowEffect, QSizeGrip, QStackedWidget
@@ -28,6 +30,9 @@ class StickyNote(QWidget):
 		self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
 		if title == None:
 			title = "Note"
+
+		# Running inside .venv?
+		running_in_venv = sys.prefix != sys.base_prefix
 
 		# Build the layout: main layout only has margins and a container layout, container has a drop-shadow
 		layout = QVBoxLayout(self)
@@ -156,6 +161,33 @@ class StickyNote(QWidget):
 		font_menu.addAction("Reset font size", lambda: self.editor.set_font_size_offset(0), shortcut="Ctrl+0")
 		font_button.setMenu(font_menu)
 		self.font_menu = font_menu
+
+		# If inside .venv, the menu style can look bad because it doesn't follow the system theme. Restyle it.
+		if running_in_venv:
+			self.font_menu.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
+			self.font_menu.setStyleSheet("""
+				QMenu {
+					background-color: rgba(64, 64, 64, 0.9);
+					border: 1px solid gray;
+					border-radius: 8px;
+					color: white;
+					padding: 3px;
+				}
+				QMenu::item {
+					background-color: transparent;
+					border-radius: 4px;
+					padding: 5px;
+				}
+				QMenu::item:selected {
+					background-color: rgba(0, 0, 0, 0.4);
+				}
+				QMenu::shortcut {
+					color: blue;
+				}
+				QMenu::icon {
+					margin: 4px;
+				}
+			""")
 
 		# Delete-button
 		delete_button = QPushButton("", self.header)
