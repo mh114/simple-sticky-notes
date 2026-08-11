@@ -139,7 +139,7 @@ class StickyNote(QWidget):
 		color_button.setMenu(color_menu)
 		self.color_menu = color_menu
 
-		# Font-button (take care not to steal focus from note editor)
+		# Font-button
 		font_button = QToolButton(self.header, popupMode=QToolButton.ToolButtonPopupMode.InstantPopup)
 		font_button.setToolTip("Adjust text formatting")
 		font_button.setIcon(IconCache.load_icon_svg("fonts.svg", size=ICON_SIZE, scale=1.2, opacity=ICON_OPACITY))
