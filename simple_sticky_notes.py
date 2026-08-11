@@ -101,7 +101,6 @@ class SimpleStickyNotes(NotesProtocol):
 
 		# Menu font (TODO: should use SystemFont.MenuFont, but not yet available)
 		self.menu_font = QFont(QFontDatabase.systemFont(QFontDatabase.SystemFont.GeneralFont))
-		# self.menu_font.setPointSize(self.app_font.pointSize() - 1)
 
 
 	def setup_tray_icon(self, icon: QIcon):
@@ -184,7 +183,7 @@ class SimpleStickyNotes(NotesProtocol):
 
 	def quit_app(self):
 		self._is_quitting = True
-		self.save_notes()
+		self.save_notes(force_save=True)
 		self.app.quit()
 
 
@@ -215,12 +214,23 @@ class SimpleStickyNotes(NotesProtocol):
 		return first_run
 
 
-	def save_notes(self):
+	def save_notes(self, force_save: bool = False):
 		# Serialize notes to JSON
+		if not force_save:
+			# Check if we actually need to save
+			need_to_save = False
+			for note in self.notes:
+				if note.is_dirty:
+					need_to_save = True
+					break
+			if not need_to_save:
+				return
+
 		config_dir = os.path.join(QStandardPaths.writableLocation(QStandardPaths.ConfigLocation), APP_NAME_PATH)
 		notes_data = []
 		for i, note in enumerate(self.notes):
 			n_data = note.serialize()
+			note.is_dirty = False
 			n_data["i"] = i # Store the index just in case, although Python should preserve order
 			notes_data.append(n_data)
 
@@ -275,7 +285,7 @@ class SimpleStickyNotes(NotesProtocol):
 			self.notes.remove(note)
 			note.close()
 			print("Deleted " + str(note))
-			self.save_notes()
+			self.save_notes(force_save=True)
 
 
 	def on_note_sent_to_front(self, note: StickyNote):
@@ -284,6 +294,7 @@ class SimpleStickyNotes(NotesProtocol):
 			return
 
 		# Set the topmost note to be last on the stack, so order remains when restoring
+		note.is_dirty = True
 		if self.notes and self.notes[-1] != note:
 			self.notes.remove(note)
 			self.notes.append(note)

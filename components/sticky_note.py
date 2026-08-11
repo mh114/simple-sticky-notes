@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (
 	QMessageBox, QGraphicsDropShadowEffect, QSizeGrip, QStackedWidget
 )
 from PySide6.QtCore import QSize, Qt, QEvent
-from PySide6.QtGui import QColor, QCloseEvent, QIcon
+from PySide6.QtGui import QColor, QCloseEvent, QIcon, QResizeEvent
 
 from components.color_picker_menu import ColorPickerMenu
 from components.ellipsis_label import EllipsisLabel
@@ -18,6 +18,7 @@ SHADOW_COLOR_FOCUSED = QColor(0, 0, 0, 100)
 ICON_SIZE = QSize(20, 20)
 ICON_OPACITY = 0.6
 TOOL_BUTTON_SIZE = QSize(28, 28)
+
 
 class StickyNote(QWidget):
 	def __init__(self, parent = None, text = "New Note", title: str|None = None, font_size_offset: int = 0, app: NotesProtocol = None):
@@ -37,9 +38,9 @@ class StickyNote(QWidget):
 		# Build the layout: main layout only has margins and a container layout, container has a drop-shadow
 		layout = QVBoxLayout(self)
 		layout.setContentsMargins(5, 5, 12, 12)
-		#layout.setSpacing(0)
 
 		self.change_color(*ColorPickerMenu.default_color())
+		self.is_dirty = True
 
 		self.container = QWidget(self)
 		self.container.setObjectName("container")
@@ -90,6 +91,7 @@ class StickyNote(QWidget):
 
 		# Main note text editor
 		self.editor = NoteEditor(text, self.container, font_size_offset, app)
+		self.editor.textChanged.connect(self.on_text_changed)
 
 		# Header has title label + stacked title editor and some tool buttons
 		self.header = QWidget(self.container)
@@ -237,6 +239,7 @@ class StickyNote(QWidget):
 
 	def change_color(self, color: QColor, index: int = -1):
 		self.color_index = index
+		self.is_dirty = True
 		darker = color.darker(125)
 		self.setStyleSheet(f"""
 			QWidget#container {{
@@ -247,12 +250,17 @@ class StickyNote(QWidget):
 		""")
 
 
+	def on_text_changed(self):
+		self.is_dirty = True
+
+
 	def on_title_edit_finished(self):
 		if not self.editing_title:
 			return
 		self.title.setText(self.title_editor.text())
 		self.title_stack.setCurrentWidget(self.title)
 		self.setWindowTitle(f"StickyNote: {self.title_editor.text()}")
+		self.is_dirty = True
 
 
 	def send_to_front(self):
@@ -293,6 +301,7 @@ class StickyNote(QWidget):
 			if event.button() == Qt.MouseButton.LeftButton:
 				if watched in (self.header, self.title) and self.windowHandle():
 					self.windowHandle().startSystemMove()
+					self.is_dirty = True
 					return True
 
 		# Double-click title to edit the title text
@@ -321,6 +330,11 @@ class StickyNote(QWidget):
 				return True
 
 		return super().eventFilter(watched, event)
+
+
+	def resizeEvent(self, event: QResizeEvent):
+		self.is_dirty = event.oldSize() != event.size()
+		return super().resizeEvent(event)
 
 
 	def serialize(self) -> dict[str, int|str]:
@@ -362,5 +376,6 @@ class StickyNote(QWidget):
 		if color_index >= 0:
 			note.change_color(ColorPickerMenu.get_color_for_index(color_index), color_index)
 
+		note.is_dirty = False
 		return note
 		
