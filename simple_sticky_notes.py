@@ -80,8 +80,10 @@ class SimpleStickyNotes(NotesProtocol):
 
 
 	def setup_fonts(self):
-		# Set app font and emoji font families
-		QFontDatabase.addApplicationFont(str(FONTS_PATH / "NotoColorEmoji.ttf"))
+		# Set app font and emoji font families. Use the bundled font by default.
+		emoji_font = FONTS_PATH / "NotoColorEmoji.ttf"
+		if emoji_font.exists():
+			QFontDatabase.addApplicationFont(str(emoji_font))
 		QFontDatabase.setApplicationEmojiFontFamilies(self.emoji_font_names)
 		self.app_font = QFont(QFontDatabase.systemFont(QFontDatabase.SystemFont.GeneralFont))
 		if self.font_name and QFontDatabase.hasFamily(self.font_name):

@@ -99,7 +99,6 @@ class NoteEditor(QTextEdit):
 			block = block.next()
 
 		# Strip whitespace around lines
-		# TODO: Could strip extra repeating whitespace inside lines, too?
 		html_buf = [line.strip() for line in html_buf]
 		return "<br>".join(html_buf)
 
