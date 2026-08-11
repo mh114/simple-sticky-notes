@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 import sys
 
+
 # Force XWayland backend, needs XCB
 os.environ["QT_QPA_PLATFORM"] = "xcb"
 
@@ -259,6 +260,9 @@ class SimpleStickyNotes(NotesProtocol):
 					note = StickyNote.deserialize(note_data, app=self)
 					if not self.stealth_mode:
 						note.show()
+					else:
+						note.showMinimized()
+					
 					self.notes.append(note)
 					#print(f"- Loaded note #{note_data["i"]} titled '{note_data["title"]}'")
 
@@ -277,7 +281,24 @@ class SimpleStickyNotes(NotesProtocol):
 	def set_notes_visible(self, visible: bool):
 		self._are_notes_visible = visible
 		for note in self.notes:
-			note.setVisible(visible)
+			# NOTE: Several ways of hiding/restoring the note windows
+			# note.setVisible(visible)  # <-- 1. this gets very slow for dozens of notes/windows
+
+			# 2. The following method works, but causes slight flicker after restoring the notes.
+			# We mask the flicker by setting opacity to zero for some milliseconds before restoring to 100%
+			if not visible:
+				note.showMinimized()
+			else:
+				note.setWindowOpacity(0.0)
+				note.showNormal()
+
+		if visible and self.notes:
+			def restore_note_opacity():
+				for note in self.notes:
+					note.setWindowOpacity(1.0)
+			
+			QTimer.singleShot(10, restore_note_opacity)
+			self.notes[-1].activateWindow()
 
 
 	def are_notes_visible(self) -> bool:
@@ -299,8 +320,8 @@ class SimpleStickyNotes(NotesProtocol):
 			return
 
 		# Set the topmost note to be last on the stack, so order remains when restoring
-		note.is_dirty = True
 		if self.notes and self.notes[-1] != note:
+			note.is_dirty = True
 			self.notes.remove(note)
 			self.notes.append(note)
 

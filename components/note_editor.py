@@ -41,6 +41,28 @@ class NoteEditor(QTextEdit):
 			QTextEdit QScrollBar::add-page, QTextEdit QScrollBar::sub-page {
 				background: none;
 			}
+
+			QMenu {
+				background-color: rgba(64, 64, 64, 0.9);
+				border: 1px solid gray;
+				border-radius: 0px;
+				color: white;
+				padding: 3px;
+			}
+			QMenu::item {
+				background-color: transparent;
+				border-radius: 4px;
+				padding: 5px;
+			}
+			QMenu::item:selected {
+				background-color: rgba(0, 0, 0, 0.4);
+			}
+			QMenu::item:disabled {
+				color: gray;
+			}
+			QMenu::icon {
+				margin: 4px;
+			}
 		""")
 
 		if text:

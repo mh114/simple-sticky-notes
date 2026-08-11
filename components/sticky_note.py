@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (
 	QMessageBox, QGraphicsDropShadowEffect, QSizeGrip, QStackedWidget
 )
 from PySide6.QtCore import QSize, Qt, QEvent
-from PySide6.QtGui import QColor, QCloseEvent, QIcon, QResizeEvent
+from PySide6.QtGui import QColor, QCloseEvent, QIcon, QRegion, QResizeEvent
 
 from components.color_picker_menu import ColorPickerMenu
 from components.ellipsis_label import EllipsisLabel
@@ -19,16 +19,41 @@ ICON_SIZE = QSize(20, 20)
 ICON_OPACITY = 0.6
 TOOL_BUTTON_SIZE = QSize(28, 28)
 
+MENU_STYLE_QSS = \
+	"""
+	QMenu {
+		background-color: rgba(64, 64, 64, 0.9);
+		border: 1px solid gray;
+		border-radius: 0px;
+		color: white;
+		padding: 3px;
+	}
+	QMenu::item {
+		background-color: transparent;
+		border-radius: 4px;
+		padding: 5px;
+	}
+	QMenu::item:selected {
+		background-color: rgba(0, 0, 0, 0.4);
+	}
+	QMenu::item:disabled {
+		color: grey;
+	}
+	QMenu::icon {
+		margin: 4px;
+	}
+	"""
 
 class StickyNote(QWidget):
 	def __init__(self, parent = None, text = "New Note", title: str|None = None, font_size_offset: int = 0, app: NotesProtocol = None):
 		super().__init__(parent)
 		self.app = app
 		self.setFont(app.get_app_font())
-		self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Dialog)
+		self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Tool | Qt.WindowType.WindowStaysOnTopHint)
 		self.setAttribute(Qt.WidgetAttribute.WA_MouseTracking, True)
 		self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
 		self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
+		self.setProperty("_NET_WM_WINDOW_TYPE", "_NET_WM_WINDOW_TYPE_UTILITY")
 		if title == None:
 			title = "Note"
 
@@ -166,30 +191,8 @@ class StickyNote(QWidget):
 
 		# If inside .venv, the menu style can look bad because it doesn't follow the system theme. Restyle it.
 		if running_in_venv:
-			self.font_menu.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
-			self.font_menu.setStyleSheet("""
-				QMenu {
-					background-color: rgba(64, 64, 64, 0.9);
-					border: 1px solid gray;
-					border-radius: 8px;
-					color: white;
-					padding: 3px;
-				}
-				QMenu::item {
-					background-color: transparent;
-					border-radius: 4px;
-					padding: 5px;
-				}
-				QMenu::item:selected {
-					background-color: rgba(0, 0, 0, 0.4);
-				}
-				QMenu::shortcut {
-					color: blue;
-				}
-				QMenu::icon {
-					margin: 4px;
-				}
-			""")
+			self.font_menu.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, False)
+			self.font_menu.setStyleSheet(MENU_STYLE_QSS)
 
 		# Delete-button
 		delete_button = QPushButton("", self.header)
