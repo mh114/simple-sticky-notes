@@ -377,7 +377,7 @@ class StickyNote(QWidget):
 			note.monospace_menu_action.setChecked(True)
 
 		if color_index >= 0:
-			note.change_color(ColorPickerMenu.get_color_for_index(color_index), color_index)
+			note.change_color(note.color_menu.get_color_for_index(color_index), color_index)
 
 		note.is_dirty = False
 		return note

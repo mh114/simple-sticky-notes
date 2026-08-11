@@ -1,4 +1,5 @@
 import html
+import sys
 
 from PySide6.QtWidgets import QTextEdit
 from PySide6.QtGui import QKeyEvent, QTextCharFormat, QFont, QWheelEvent
@@ -14,7 +15,7 @@ class NoteEditor(QTextEdit):
 		self.set_font_size_offset(font_size_offset)
 		self.setTabStopDistance(4 * 8)
 
-		self.setStyleSheet("""
+		styles = """
 			QTextEdit QScrollBar {
 				background: transparent;
 				width: 18px;
@@ -41,29 +42,33 @@ class NoteEditor(QTextEdit):
 			QTextEdit QScrollBar::add-page, QTextEdit QScrollBar::sub-page {
 				background: none;
 			}
-
-			QMenu {
-				background-color: rgba(64, 64, 64, 0.9);
-				border: 1px solid gray;
-				border-radius: 0px;
-				color: white;
-				padding: 3px;
-			}
-			QMenu::item {
-				background-color: transparent;
-				border-radius: 4px;
-				padding: 5px;
-			}
-			QMenu::item:selected {
-				background-color: rgba(0, 0, 0, 0.4);
-			}
-			QMenu::item:disabled {
-				color: gray;
-			}
-			QMenu::icon {
-				margin: 4px;
-			}
-		""")
+		"""
+		# If inside .venv, the context menu style can look bad because it doesn't follow the system theme. Restyle it.
+		if sys.prefix != sys.base_prefix:
+			styles += """
+				QMenu {
+					background-color: rgba(64, 64, 64, 0.9);
+					border: 1px solid gray;
+					border-radius: 0px;
+					color: white;
+					padding: 3px;
+				}
+				QMenu::item {
+					background-color: transparent;
+					border-radius: 4px;
+					padding: 5px;
+				}
+				QMenu::item:selected {
+					background-color: rgba(0, 0, 0, 0.4);
+				}
+				QMenu::item:disabled {
+					color: gray;
+				}
+				QMenu::icon {
+					margin: 4px;
+				}
+			"""
+		self.setStyleSheet(styles)
 
 		if text:
 			self.set_rich_text(text)
