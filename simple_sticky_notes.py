@@ -14,6 +14,7 @@ from components.icon_cache import IconCache
 from components.sticky_note import StickyNote
 from components.notes_protocol import NotesProtocol
 from components.kwin_window_rules import KWinWindowRules
+#from components.notes_importer import NotesImporter
 
 
 APP_NAME_PATH = "simple-sticky-notes"
@@ -74,10 +75,14 @@ class SimpleStickyNotes(NotesProtocol):
 
 		parser.addOption(QCommandLineOption(["s", "stealth"], "Stealth-mode: hides notes on startup."))
 		parser.addOption(QCommandLineOption(["c", "check-window-rule"], "Check if KDE Window Rule exists and offer to add it, if it does not."))
+		#parser.addOption(QCommandLineOption(["import-from-mint-sticky"], "Import notes from Linux Mint Sticky."))
 		parser.process(app)
 
 		self.stealth_mode = parser.isSet("stealth")
 		self.check_window_rule = parser.isSet("check-window-rule")
+		#if parser.isSet("import-from-mint-sticky"):
+		# 	NotesImporter.import_mint_sticky_notes()
+		# 	sys.exit(0)
 
 
 	def setup_fonts(self):

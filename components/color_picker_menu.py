@@ -19,6 +19,7 @@ class ColorPickerMenu(QMenu):
 		self.setStyleSheet("background-color: rgba(128, 128, 128, 0.6); border: 1px solid gray; border-radius: 8px;")
 
 		# Rainbow of colors
+		# TODO: Should add some light grays and white
 		colors: list[QColor] = [ColorPickerMenu.get_color_for_index(i) for i in range(NUM_COLORS)]
 
 		# Grid layout of color buttons
