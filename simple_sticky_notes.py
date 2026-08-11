@@ -43,7 +43,7 @@ class SimpleStickyNotes(NotesProtocol):
 
 		self.process_command_line_args(self.app)
 		first_run = self.load_config()
-		if first_run:
+		if first_run or self.check_window_rule:
 			QTimer.singleShot(0, lambda: KWinWindowRules.check_kwin_window_rules(APP_DISPLAY_NAME, self))
 
 		#icon = QIcon.fromTheme("note-new")
@@ -73,10 +73,11 @@ class SimpleStickyNotes(NotesProtocol):
 		parser.addVersionOption()
 
 		parser.addOption(QCommandLineOption(["s", "stealth"], "Stealth-mode: hides notes on startup."))
-		# TODO: Add option to (re)run the KDE Window Rule -checker
+		parser.addOption(QCommandLineOption(["c", "check-window-rule"], "Check if KDE Window Rule exists and offer to add it, if it does not."))
 		parser.process(app)
 
 		self.stealth_mode = parser.isSet("stealth")
+		self.check_window_rule = parser.isSet("check-window-rule")
 
 
 	def setup_fonts(self):

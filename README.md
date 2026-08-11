@@ -95,8 +95,9 @@ After the first run, the configuration file is created at `~/.config/simple-stic
 List of potential changes to be made, or features to be added. No guarantees, though.
 - [ ] Write about making a `.desktop`-file
 - [ ] Note scrollbar should be styled to look nicer
-- [ ] Periodic autosave? (need to detect if notes are "dirty")
+- [ ] Periodic autosave?
 	- Or trigger save after typing / making changes (with some delay)
+	- [ ] Need to detect if notes are "dirty", prevent excess saving if nothing has changed
 - [ ] Maybe detect URLs from notes and make them clickable
 - [x] **DONE:** Note text format menu should be styled to look nicer (custom style applied when ran inside `.venv`)
 - [x] **DONE:** Better icon for resize-handle
