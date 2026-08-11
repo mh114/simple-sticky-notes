@@ -96,8 +96,10 @@ List of potential changes to be made, or features to be added. No guarantees, th
 - [ ] Write about making a `.desktop`-file
 - [ ] Periodic autosave?
 	- Or trigger save after typing / making changes (with some delay)
+	- [ ] Make backup of notes at startup
 	- [x] **DONE:** Need to detect if notes are "dirty", prevent excess saving if nothing has changed
 - [ ] Maybe detect URLs from notes and make them clickable
+- [ ] Sets/groups of notes, one active at a time
 - [x] **DONE:** Note scrollbar should be styled to look nicer
 - [x] **DONE:** Note text format menu should be styled to look nicer (custom style applied when ran inside `.venv`)
 - [x] **DONE:** Better icon for resize-handle
