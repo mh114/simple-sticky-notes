@@ -135,6 +135,7 @@ class SimpleStickyNotes(NotesProtocol):
 		# Tray context menu
 		menu = QMenu()
 		menu.addAction(QIcon.fromTheme(QIcon.ThemeIcon.DocumentNew), "Add new note", self.create_note)
+		menu.addAction("Toggle notes", lambda: self.on_tray_activated(QSystemTrayIcon.ActivationReason.Trigger))
 		menu.addSeparator()
 		hide_on_startup_action = menu.addAction(IconCache.load_icon_svg("eye-slash-regular-full.svg", size=QSize(64,64), scale=0.9, color=Qt.GlobalColor.white), "Hide notes on startup", self.toggle_hide_on_startup)
 		hide_on_startup_action.setCheckable(True)
