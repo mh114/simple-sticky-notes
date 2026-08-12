@@ -20,7 +20,7 @@ from components.color_picker_menu import ColorPickerMenu
 from components.ellipsis_label import EllipsisLabel
 from components.icon_cache import IconCache
 from components.note_editor import NoteEditor
-from components.notes_protocol import NotesProtocol
+from components.notes_protocol import NotesProtocol, PlatformType
 
 SHADOW_COLOR = QColor(0, 0, 0, 50)
 SHADOW_COLOR_FOCUSED = QColor(0, 0, 0, 100)
@@ -58,7 +58,14 @@ class StickyNote(QWidget):
 		super().__init__(parent)
 		self.app = app
 		self.setFont(app.get_app_font())
-		self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Dialog | Qt.WindowType.WindowStaysOnTopHint)
+
+		# Choose window flags depending on platform: on (X)Wayland we need Dialog, on X11 we can use Tool
+		if app.get_platform_type() == PlatformType.NativeX11:
+			self.setWindowFlags(Qt.WindowType.Tool | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint)
+		else:
+			self.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint)
+
+
 		self.setAttribute(Qt.WidgetAttribute.WA_MouseTracking, True)
 		self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
 		self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)

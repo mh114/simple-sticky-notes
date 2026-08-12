@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import TYPE_CHECKING, Protocol
 
 from PySide6.QtCore import QSettings
@@ -6,8 +7,12 @@ from PySide6.QtGui import QFont
 if TYPE_CHECKING:
 	from components.sticky_note import StickyNote
 
+class PlatformType(Enum):
+	NativeX11 = 1,
+	XWayland = 2,
+	Wayland = 3,
 
-# NOTE: Could use signals for these..
+
 class NotesProtocol(Protocol):
 	def set_notes_visible(visible: bool): ...
 	def are_notes_visible() -> bool: ...
@@ -18,4 +23,6 @@ class NotesProtocol(Protocol):
 	def get_app_font() -> QFont: ...
 	def get_monospace_font() -> QFont: ...
 	def get_menu_font() -> QFont: ...
+	def get_platform_type() -> PlatformType: ...
+
 

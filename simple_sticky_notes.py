@@ -5,7 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-# Force XWayland backend, needs XCB
+# Force XWayland backend, needs XCB libxcb-cursor library
 os.environ["QT_QPA_PLATFORM"] = "xcb"
 
 from PySide6.QtCore import (
@@ -21,7 +21,7 @@ from PySide6.QtWidgets import QApplication, QMenu, QMessageBox, QSystemTrayIcon
 
 from components.icon_cache import IconCache
 from components.kwin_window_rules import KWinWindowRules
-from components.notes_protocol import NotesProtocol
+from components.notes_protocol import NotesProtocol, PlatformType
 from components.sticky_note import StickyNote
 
 #from components.notes_importer import NotesImporter
@@ -44,6 +44,8 @@ class SimpleStickyNotes(NotesProtocol):
 
 	def __init__(self):
 		self.app = QApplication(sys.argv)
+		self._platform_type = None
+		print(f"Running on {self.get_platform_type()}")
 
 		self.app.setDesktopFileName(APP_NAME_PATH)
 		self.app.setApplicationName(APP_NAME_PATH)
@@ -359,6 +361,20 @@ class SimpleStickyNotes(NotesProtocol):
 
 	def get_menu_font(self) -> QFont:
 		return self.menu_font
+
+
+	def get_platform_type(self) -> PlatformType:
+		if not self._platform_type:
+			platform = os.environ.get("QT_QPA_PLATFORM", "")
+			if platform == "xcb":
+				if os.environ.get("XDG_SESSION_TYPE") == "wayland" or os.environ.get("WAYLAND_DISPLAY"):
+					self._platform_type = PlatformType.XWayland
+				else:
+					self._platform_type = PlatformType.NativeX11
+			elif platform == "wayland":
+				self._platform_type = PlatformType.Wayland
+
+		return self._platform_type
 	#---------------------------
 
 
@@ -423,7 +439,7 @@ StartupWMClass={APP_NAME_PATH}
 
 		print(f"Generated .desktop file to '{desktop_file}'")
 		print("Updating desktop database..")
-		sys.exit(subprocess.run(["update-desktop-database", str(desktop_files_path)]).returncode)
+		sys.exit(subprocess.run(["update-desktop-database", str(desktop_files_path)], check=False).returncode)
 
 
 
