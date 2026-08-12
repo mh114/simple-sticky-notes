@@ -368,7 +368,7 @@ class StickyNote(QWidget):
 
 
 	@classmethod
-	def deserialize(cls, data: dict[str, int|str], app: NotesProtocol) -> StickyNote:
+	def deserialize(cls, data: dict[str, int|str], app: NotesProtocol) -> "StickyNote":
 		x = int(data["x"])
 		y = int(data["y"])
 		w = int(data["w"])
