@@ -1,13 +1,13 @@
 [SimpleStickyNotes]
 Description=SimpleStickyNotes
 desktops=\\0
-desktopsrule=2
+desktopsrule=3
 skippager=true
-skippagerrule=2
+skippagerrule=3
 skipswitcher=true
-skipswitcherrule=2
+skipswitcherrule=3
 skiptaskbar=true
-skiptaskbarrule=2
+skiptaskbarrule=3
 title=StickyNote:
 titlematch=2
 wmclass=simple-sticky-notes

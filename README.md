@@ -18,6 +18,8 @@ This app was partially inspired by [**Linux Mint** Sticky](https://github.com/li
 	- I ran into issues with note/window positioning on **Wayland** and ultimately ended up side-stepping the issue by running in **XWayland** 🫣
 	- I _have_ some ideas on how to realise native Wayland support, but it remains to be seen if I can be bothered to try them.. 🤔
 	- Also needs a _KDE Window Rule_ to avoid stickies from showing up in taskbar / task switcher (→ see [installation notes below](#kde-window-rule-or-how-to-avoid-stickies-being-all-over-the-taskbar); the app can do this automatically or user can configure the rule manually)
+- _Seems_ to work in **X11**, too
+	- Briefly tested in Linux Mint / Cinnamon (on X11)
 - Notes are automatically backed up on app startup (10 most recent backups are kept by default)
 - Written in **Python** using **PySide6**/**Qt**
 
@@ -58,7 +60,7 @@ To simplify things the app can be added to your system application launcher with
 Optional: launch with `--help` to see other available command-line arguments, but they're not really needed for general usage.
 
 ### KDE Window rule, or: _how to avoid stickies being all over the taskbar?_
-If your desktop is using **Wayland**, the sticky notes will likely show up as separate windows on the taskbar (because that's what they are, technically). For **X11**-based desktops, chances are they work as is, but I've not tested it personally.
+If your desktop is using **Wayland**, the sticky notes will likely show up as separate windows on the taskbar (because that's what they are, technically). For **X11**-based desktops, this is not relevant.
 
 In any case, for proper UX, the stickies should be hidden from task switchers. Two options to do that (on **KDE**): manual setup or automatic setup.
 
@@ -70,10 +72,11 @@ On the first run, **(Simple) Sticky Notes** offers to add the window rule for yo
 Go to **KDE System Settings** → **Window Rules** and add select _"Import..."_ Pick the included `sticky_notes.kwinrule`. You can also manually add a new rule and configure it like below:
 - Window class, exact match: `simple-sticky-notes`
 - Window title, substring match: `StickyNote:`
-- Virtual desktops: **Force, All desktops** (this is optional)
-- Skip taskbar: **Force, Yes**
-- Skip pager: **Force, Yes**
-- Skip switcher: **Force, Yes**  
+- Virtual desktops: **Apply initially, All desktops** (this is optional)
+- Skip taskbar: **Apply initially, Yes**
+- Skip pager: **Apply initially, Yes**
+- Skip switcher: **Apply initially, Yes**
+- If _Apply initially_ doesn't seem to work, try _Force_. (When automatically adding the rule, _Force_ is used so that the changes are immediately in effect.)  
 ![Window rule setup](./img/kde_window_rule.webp)
 
 ### Emoji-support
@@ -97,11 +100,12 @@ After the first run, the configuration file is created at `~/.config/simple-stic
 
 ## TODO-list
 List of potential changes to be made, or features to be added. No guarantees, though.
-- [ ] Test whether "Force" is required for window rule, "Apply initially" seems to work fine
 - [ ] Periodic autosave?
 	- Or trigger save after typing / making changes (with some delay)
 - [ ] Maybe detect URLs from notes and make them clickable
 - [ ] Sets/groups of notes, one active at a time
+- [x] **DONE:** Test whether "Force" is required for window rule, "Apply initially" seems to work fine
+	- Seems to work, although automatic window rule method still uses "Force" to have the effect immediately visible
 - [x] **DONE:** Write about making a `.desktop`-file
 - [x] **DONE:** Make backup of notes at startup
 - [x] **DONE:** Need to detect if notes are "dirty", prevent excess saving if nothing has changed
