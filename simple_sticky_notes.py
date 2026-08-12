@@ -317,7 +317,11 @@ class SimpleStickyNotes(NotesProtocol):
 					note.setWindowOpacity(1.0)
 			
 			QTimer.singleShot(10, restore_note_opacity)
-			self.notes[-1].activateWindow()
+			if self.get_platform_type() == PlatformType.NativeX11:
+				for note in self.notes:
+					note.activateWindow()
+			else:
+				self.notes[-1].activateWindow()
 
 
 	def are_notes_visible(self) -> bool:
