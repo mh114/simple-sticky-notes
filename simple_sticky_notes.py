@@ -28,7 +28,6 @@ APP_ORG = "MHGames"
 APP_VERSION = "0.1"
 NOTES_FILENAME = "notes.json"
 SETTINGS_FILENAME = f"{APP_NAME_PATH}.conf"
-NUM_BACKUPS = 10
 
 FONTS_PATH = Path(__file__).parent / "fonts"
 
@@ -214,6 +213,7 @@ class SimpleStickyNotes(NotesProtocol):
 			self.settings.setValue("fonts/monospace_font_name", "")
 			self.settings.setValue("fonts/emoji_font_names", ["Noto Color Emoji", "Segoe UI Emoji"])
 
+			self.settings.setValue("notes/num_backups", 10)
 			self.settings.setValue("notes/default_title", "Note")
 			self.settings.setValue("notes/color_icon_name", "droplet") # "droplet|paintbrush|brush|palette"
 			self.settings.setValue("notes/hide_on_startup", False)
@@ -357,9 +357,14 @@ class SimpleStickyNotes(NotesProtocol):
 
 	def _take_notes_backup(self, notes_file: str):
 		# Keep a few backups and rotate them: oldest gets overwritten first
-		num = 0
+		num_backups = int(self.settings.value("notes/num_backups", 10))
+		if num_backups <= 0:
+			print("Automatic backups are disabled by configuration.")
+			return
+		
 		notes_path = Path(notes_file)
-		while num < NUM_BACKUPS:
+		num = 0
+		while num < num_backups:
 			num += 1
 			backup_file = notes_path.with_name(f"{notes_path.name}.{num}.bak")
 			if not backup_file.exists():
@@ -368,7 +373,7 @@ class SimpleStickyNotes(NotesProtocol):
 			# We've reached the number of backups to keep, overwrite the oldest
 			oldest_file: Path = None
 			oldest_ts: int = -1
-			for i in range(0, NUM_BACKUPS):
+			for i in range(0, num_backups):
 				file = notes_path.with_name(f"{notes_path.name}.{i + 1}.bak")
 				modified_ts = file.stat().st_mtime_ns
 				if modified_ts < oldest_ts or not oldest_file:

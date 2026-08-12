@@ -18,7 +18,7 @@ This app was partially inspired by [**Linux Mint** Sticky](https://github.com/li
 	- I ran into issues with note/window positioning on **Wayland** and ultimately ended up side-stepping the issue by running in **XWayland** 🫣
 	- I _have_ some ideas on how to realise native Wayland support, but it remains to be seen if I can be bothered to try them.. 🤔
 	- Also needs a _KDE Window Rule_ to avoid stickies from showing up in taskbar / task switcher (→ see [installation notes below](#kde-window-rule-or-how-to-avoid-stickies-being-all-over-the-taskbar); the app can do this automatically or user can configure the rule manually)
-- Notes are automatically backed up on app startup (10 most recent backups are kept)
+- Notes are automatically backed up on app startup (10 most recent backups are kept by default)
 - Written in **Python** using **PySide6**/**Qt**
 
 
@@ -87,7 +87,8 @@ After the first run, the configuration file is created at `~/.config/simple-stic
 || `font_size` | `-1` | Font point size, e.g. 14, `-1` means the system default. |
 ||`monospace_font_name`| _(empty)_ | Fixed-with/monospace font family name to use for notes that have fixed-width enabled. E.g. `Noto Sans Mono`. Empty value means use the system default monospace font.|
 ||`emoji_font_names`|`Noto Color Emoji, Segoe UI Emoji`| Comma-separated list of emoji font family names. Order matters, first found font is used. Note that Qt seems to have issues rendering some emoji fonts.|
-|**`[notes]`**|`default_note_title`|`Note`|Default title for new notes. Can be left empty.|
+|**`[notes]`**|`num_backups`|`10`|How many automatic backups to keep. Set to `0` to disable the automatic backups on startup.|
+||`default_note_title`|`Note`|Default title for new notes. Can be left empty.|
 ||`color_icon_name`|`droplet`|Icon for the color picker: can be set to `brush`, `droplet`, `paintbrush` or `palette` for a different icon. (Only because I couldn't decide which icon is the best!)|
 ||`hide_on_startup`|`false`|Whether to hide notes on app startup. **NOTE:** Command-line argument `--stealth` or `-s` can also be used to force notes stay hidden, regardless of this setting.|
 
