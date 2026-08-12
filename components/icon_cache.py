@@ -58,4 +58,4 @@ class IconCache:
 
 
 	def get_icon_qss_url(filename: str) -> str:
-		return f"url({str(ASSETS_PATH / filename)})"
+		return f"url({ASSETS_PATH / filename})"
