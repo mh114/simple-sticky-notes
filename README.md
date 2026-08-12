@@ -48,12 +48,14 @@ Depends on whether you're using system libaries or the virtual environment. To l
 - ...while within `.venv`-shell: `python3 simple_sticky_notes.py`
 	- to exit `.venv`-shell: `deactivate`
 
-- ...normally, but using the Python-instance from inside the `.venv`:  
+- ...outside `.venv`, but using the Python-instance & libraries from inside the `.venv`:  
   ```
   /PATH/TO/simple-sticky-notes/.venv/bin/python3 /PATH/TO/simple-sticky-notes/simple_sticky_notes.py
   ```
 
-Launch with `--help` to see available command-line arguments, but they're not really needed for general usage.
+To simplify things the app can be added to your system application launcher with a `.desktop`-file. Run the app as outlined above with `--install-desktop-file` once. After that you should find **(Simple) Sticky Notes** in your app launcher menus.
+
+Optional: launch with `--help` to see other available command-line arguments, but they're not really needed for general usage.
 
 ### KDE Window rule, or: _how to avoid stickies being all over the taskbar?_
 If your desktop is using **Wayland**, the sticky notes will likely show up as separate windows on the taskbar (because that's what they are, technically). For **X11**-based desktops, chances are they work as is, but I've not tested it personally.
@@ -95,11 +97,12 @@ After the first run, the configuration file is created at `~/.config/simple-stic
 
 ## TODO-list
 List of potential changes to be made, or features to be added. No guarantees, though.
-- [ ] Write about making a `.desktop`-file
+- [ ] Test whether "Force" is required for window rule, "Apply initially" seems to work fine
 - [ ] Periodic autosave?
 	- Or trigger save after typing / making changes (with some delay)
 - [ ] Maybe detect URLs from notes and make them clickable
 - [ ] Sets/groups of notes, one active at a time
+- [x] **DONE:** Write about making a `.desktop`-file
 - [x] **DONE:** Make backup of notes at startup
 - [x] **DONE:** Need to detect if notes are "dirty", prevent excess saving if nothing has changed
 - [x] **DONE:** Note scrollbar should be styled to look nicer
