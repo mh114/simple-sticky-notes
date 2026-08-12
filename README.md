@@ -7,7 +7,7 @@ This app was partially inspired by [**Linux Mint** Sticky](https://github.com/li
 ![Screenshot of sticky notes](./img/screenshot1.webp)
 
 ## Features
-<img src="./img/colorpicker_icons.webp" style="float: right;" width="30%" height="auto">
+<img src="./img/colorpicker_icons.webp" align="right">
 
 - Sticky notes of different colors, basic rich-text support (**bold**, _italic_, ~~strikethrough~~ and <ins>underline</ins>)
 - Notes can have optional title (_double-click_ to edit)
