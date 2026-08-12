@@ -58,7 +58,7 @@ class StickyNote(QWidget):
 		super().__init__(parent)
 		self.app = app
 		self.setFont(app.get_app_font())
-		self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Tool | Qt.WindowType.WindowStaysOnTopHint)
+		self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Dialog | Qt.WindowType.WindowStaysOnTopHint)
 		self.setAttribute(Qt.WidgetAttribute.WA_MouseTracking, True)
 		self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
 		self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
@@ -276,10 +276,12 @@ class StickyNote(QWidget):
 
 
 	def send_to_front(self):
-		if self.windowHandle():
-			self.windowHandle().requestActivate()
 		self.activateWindow()
 		self.raise_()
+		if self.windowHandle():
+			self.windowHandle().raise_()
+			self.windowHandle().requestActivate()
+
 		if self.app:
 			#print("sending to front: " + self.title.text())
 			self.app.on_note_sent_to_front(self)
