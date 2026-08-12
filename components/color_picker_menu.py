@@ -1,3 +1,7 @@
+# (Simple) Sticky Notes - Copyright (c) 2026 Mika Halttunen (https://www.mhgames.org)
+# https://github.com/mh114/simple-sticky-notes
+# Licensed under the MIT-license.
+
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QColor, Qt
 from PySide6.QtWidgets import QGridLayout, QMenu, QPushButton, QWidget, QWidgetAction

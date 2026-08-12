@@ -1,3 +1,7 @@
+# (Simple) Sticky Notes - Copyright (c) 2026 Mika Halttunen (https://www.mhgames.org)
+# https://github.com/mh114/simple-sticky-notes
+# Licensed under the MIT-license.
+
 from pathlib import Path
 
 from PySide6.QtCore import QRectF, QSize
