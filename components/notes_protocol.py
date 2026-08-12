@@ -1,4 +1,4 @@
-from typing import Protocol, TYPE_CHECKING
+from typing import TYPE_CHECKING, Protocol
 
 from PySide6.QtCore import QSettings
 from PySide6.QtGui import QFont

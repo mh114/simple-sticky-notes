@@ -1,10 +1,10 @@
-from configparser import ConfigParser
-from pathlib import Path
 import shutil
 import uuid
+from configparser import ConfigParser
+from pathlib import Path
 
+from PySide6.QtDBus import QDBusConnection, QDBusInterface
 from PySide6.QtWidgets import QMessageBox
-from PySide6.QtDBus import QDBusInterface, QDBusConnection
 
 from components.notes_protocol import NotesProtocol
 
@@ -105,7 +105,7 @@ class KWinWindowRules:
 				
 				# Read the config file and update the [General]-section
 				if not rules_config.read(kwin_rules_file, encoding="utf-8"):
-					raise IOError(f"Cannot parse {kwin_rules_file}!")
+					raise OSError(f"Cannot parse {kwin_rules_file}!")
 
 				if GENERAL_SECTION not in rules_config:
 					rules_config[GENERAL_SECTION] = {}
@@ -144,7 +144,7 @@ class KWinWindowRules:
 				app.set_notes_visible(True)
 
 
-		except BaseException as ex:
+		except Exception as ex:
 			msg = f"Failed to register KWin rule, need to add manually!\n\nError: {ex}"
 			print("ERROR: " + msg)
 			QMessageBox.warning(None, "Failed to register window rule", msg)

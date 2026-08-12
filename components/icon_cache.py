@@ -1,16 +1,15 @@
 from pathlib import Path
 
-from PySide6.QtGui import QColor, QIcon, QPainter, QPixmap, Qt
 from PySide6.QtCore import QRectF, QSize
+from PySide6.QtGui import QColor, QIcon, QPainter, QPixmap, Qt
 from PySide6.QtSvg import QSvgRenderer
-
 
 # Cache of icon paths <-> icons
 _icons: dict[str, QIcon] = {}
 
 # components/... -> ../assets/...
 ASSETS_PATH = Path(__file__).parent.parent / "assets"
-
+DEFAULT_ICON_SIZE = QSize(24, 24)
 
 class IconCache:
 	"""
@@ -18,7 +17,7 @@ class IconCache:
 	Optionally alters the icon opacity, scale or color during load.
 	"""
 
-	def load_icon_svg(filename: str, size: QSize = QSize(24, 24), scale: float = 1.0, opacity: float = 1.0, color: QColor = None) -> QIcon:
+	def load_icon_svg(filename: str, size: QSize = DEFAULT_ICON_SIZE, scale: float = 1.0, opacity: float = 1.0, color: QColor = None) -> QIcon:
 		# Cache by combination of filename, size, scale and opacity
 		cache_path = f"{filename}@{size.toTuple()},{scale:.2f},{opacity:.2f}"
 		icon = _icons.get(cache_path, None)

@@ -1,6 +1,7 @@
+from PySide6.QtCore import QSize, Qt
+from PySide6.QtGui import QFontMetrics, QPainter, QPaintEvent
 from PySide6.QtWidgets import QLabel, QSizePolicy
-from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QPainter, QFontMetrics, QPaintEvent
+
 
 class EllipsisLabel(QLabel):
 	def __init__(self, text: str = "", parent = None):

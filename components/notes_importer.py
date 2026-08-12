@@ -50,7 +50,7 @@ class NotesImporter:
 				json.dump({ "notes": imported_notes }, f, indent=4, ensure_ascii=False)
 			print("DONE!")
 
-		except BaseException as ex:
+		except Exception as ex:
 			print(f"ERROR: Failed to import!\n{ex}")
 
 

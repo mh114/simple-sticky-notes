@@ -1,11 +1,12 @@
 import html
 import sys
 
-from PySide6.QtWidgets import QTextEdit
-from PySide6.QtGui import QKeyEvent, QTextCharFormat, QFont, QWheelEvent
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QFont, QKeyEvent, QTextCharFormat, QWheelEvent
+from PySide6.QtWidgets import QTextEdit
 
 from components.notes_protocol import NotesProtocol
+
 
 class NoteEditor(QTextEdit):
 	def __init__(self, text: str = "", parent = None, font_size_offset: int = 0, app: NotesProtocol = None):

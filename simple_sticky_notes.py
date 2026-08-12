@@ -1,22 +1,29 @@
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
-
+from pathlib import Path
 
 # Force XWayland backend, needs XCB
 os.environ["QT_QPA_PLATFORM"] = "xcb"
 
-from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMessageBox
-from PySide6.QtCore import QCommandLineOption, QCommandLineParser, QSettings, QSize, QStandardPaths, QTimer
+from PySide6.QtCore import (
+	QCommandLineOption,
+	QCommandLineParser,
+	QSettings,
+	QSize,
+	QStandardPaths,
+	QTimer,
+)
 from PySide6.QtGui import QFont, QFontDatabase, QIcon, Qt
+from PySide6.QtWidgets import QApplication, QMenu, QMessageBox, QSystemTrayIcon
 
 from components.icon_cache import IconCache
-from components.sticky_note import StickyNote
-from components.notes_protocol import NotesProtocol
 from components.kwin_window_rules import KWinWindowRules
+from components.notes_protocol import NotesProtocol
+from components.sticky_note import StickyNote
+
 #from components.notes_importer import NotesImporter
 
 
@@ -281,7 +288,7 @@ class SimpleStickyNotes(NotesProtocol):
 				
 		except FileNotFoundError:
 			return
-		except BaseException as err:
+		except OSError as err:
 			print(f"ERROR: Failed to load notes from {notes_file}, error: {err}")
 			return
 
@@ -373,7 +380,7 @@ class SimpleStickyNotes(NotesProtocol):
 			# We've reached the number of backups to keep, overwrite the oldest
 			oldest_file: Path = None
 			oldest_ts: int = -1
-			for i in range(0, num_backups):
+			for i in range(num_backups):
 				file = notes_path.with_name(f"{notes_path.name}.{i + 1}.bak")
 				modified_ts = file.stat().st_mtime_ns
 				if modified_ts < oldest_ts or not oldest_file:

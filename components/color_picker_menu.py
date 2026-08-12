@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QGridLayout, QMenu, QPushButton, QWidget, QWidgetAction
-from PySide6.QtGui import QColor, Qt
 from PySide6.QtCore import Signal
+from PySide6.QtGui import QColor, Qt
+from PySide6.QtWidgets import QGridLayout, QMenu, QPushButton, QWidget, QWidgetAction
 
 NUM_COLORS = 16
 HUE_STEP = 1.0 / NUM_COLORS

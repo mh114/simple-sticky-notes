@@ -1,11 +1,20 @@
 import sys
 
+from PySide6.QtCore import QEvent, QSize, Qt
+from PySide6.QtGui import QCloseEvent, QColor, QIcon, QResizeEvent
 from PySide6.QtWidgets import (
-	QMenu, QToolButton, QWidget, QPushButton, QLineEdit, QVBoxLayout, QHBoxLayout,
-	QMessageBox, QGraphicsDropShadowEffect, QSizeGrip, QStackedWidget
+	QGraphicsDropShadowEffect,
+	QHBoxLayout,
+	QLineEdit,
+	QMenu,
+	QMessageBox,
+	QPushButton,
+	QSizeGrip,
+	QStackedWidget,
+	QToolButton,
+	QVBoxLayout,
+	QWidget,
 )
-from PySide6.QtCore import QSize, Qt, QEvent
-from PySide6.QtGui import QColor, QCloseEvent, QIcon, QRegion, QResizeEvent
 
 from components.color_picker_menu import ColorPickerMenu
 from components.ellipsis_label import EllipsisLabel
@@ -301,15 +310,15 @@ class StickyNote(QWidget):
 			self.send_to_front()
 
 			# Drag from header/title to move note
-			if event.button() == Qt.MouseButton.LeftButton:
-				if watched in (self.header, self.title) and self.windowHandle():
+			if event.button() == Qt.MouseButton.LeftButton \
+				and watched in (self.header, self.title) and self.windowHandle():
 					self.windowHandle().startSystemMove()
 					self.is_dirty = True
 					return True
 
 		# Double-click title to edit the title text
-		elif event.type() == QEvent.Type.MouseButtonDblClick:
-			if event.button() == Qt.MouseButton.LeftButton and watched == self.title:
+		elif event.type() == QEvent.Type.MouseButtonDblClick \
+			and event.button() == Qt.MouseButton.LeftButton and watched == self.title:
 				title = self.title.text()
 				self.editing_title = True
 				self.title_editor.setText(title)
@@ -326,8 +335,8 @@ class StickyNote(QWidget):
 				self.editor.clear_selection()
 
 		# ..but cancel when pressing ESC
-		elif event.type() == QEvent.Type.KeyPress and event.key() == Qt.Key.Key_Escape:
-			if watched == self.title_editor and self.editing_title:
+		elif event.type() == QEvent.Type.KeyPress and event.key() == Qt.Key.Key_Escape \
+			and watched == self.title_editor and self.editing_title:
 				self.editing_title = False
 				self.title_stack.setCurrentWidget(self.title)
 				return True
