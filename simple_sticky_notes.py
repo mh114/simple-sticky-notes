@@ -370,13 +370,16 @@ class SimpleStickyNotes(NotesProtocol):
 	def get_platform_type(self) -> PlatformType:
 		if not self._platform_type:
 			platform = os.environ.get("QT_QPA_PLATFORM", "")
+			wayland_env_found = os.environ.get("XDG_SESSION_TYPE") == "wayland" or bool(os.environ.get("WAYLAND_DISPLAY"))
 			if platform == "xcb":
-				if os.environ.get("XDG_SESSION_TYPE") == "wayland" or os.environ.get("WAYLAND_DISPLAY"):
+				if wayland_env_found:
 					self._platform_type = PlatformType.XWayland
 				else:
 					self._platform_type = PlatformType.NativeX11
 			elif platform == "wayland":
 				self._platform_type = PlatformType.Wayland
+			else:
+				self._platform_type = PlatformType.XWayland if wayland_env_found else PlatformType.NativeX11
 
 		return self._platform_type
 	#---------------------------
