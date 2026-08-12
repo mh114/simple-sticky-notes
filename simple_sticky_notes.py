@@ -1,6 +1,7 @@
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 
@@ -27,6 +28,7 @@ APP_ORG = "MHGames"
 APP_VERSION = "0.1"
 NOTES_FILENAME = "notes.json"
 SETTINGS_FILENAME = f"{APP_NAME_PATH}.conf"
+NUM_BACKUPS = 10
 
 FONTS_PATH = Path(__file__).parent / "fonts"
 
@@ -257,6 +259,7 @@ class SimpleStickyNotes(NotesProtocol):
 		# Load notes from JSON
 		notes_file = os.path.join(QStandardPaths.writableLocation(QStandardPaths.ConfigLocation), APP_NAME_PATH, NOTES_FILENAME)
 		try:
+			self._take_notes_backup(notes_file)
 			with open(notes_file, "rt", encoding="utf-8") as f:
 				print("Loading notes from: " + notes_file)
 				notes_data = json.load(f)["notes"]
@@ -265,6 +268,7 @@ class SimpleStickyNotes(NotesProtocol):
 					if not self.stealth_mode:
 						note.show()
 					else:
+						# In stealth mode we do this trickery to lessen the impact when all notes are toggled visible
 						note.setWindowOpacity(0.0)
 						note.show()
 						note.showMinimized()
@@ -349,6 +353,31 @@ class SimpleStickyNotes(NotesProtocol):
 	def get_menu_font(self) -> QFont:
 		return self.menu_font
 	#---------------------------
+
+
+	def _take_notes_backup(self, notes_file: str):
+		# Keep a few backups and rotate them: oldest gets overwritten first
+		num = 0
+		notes_path = Path(notes_file)
+		while num < NUM_BACKUPS:
+			num += 1
+			backup_file = notes_path.with_name(f"{notes_path.name}.{num}.bak")
+			if not backup_file.exists():
+				break
+		if backup_file.exists():
+			# We've reached the number of backups to keep, overwrite the oldest
+			oldest_file: Path = None
+			oldest_ts: int = -1
+			for i in range(0, NUM_BACKUPS):
+				file = notes_path.with_name(f"{notes_path.name}.{i + 1}.bak")
+				modified_ts = file.stat().st_mtime_ns
+				if modified_ts < oldest_ts or not oldest_file:
+					oldest_file = file
+					oldest_ts = modified_ts
+			backup_file = oldest_file
+
+		print("Taking a backup to:", backup_file)
+		shutil.copy(notes_file, str(backup_file))
 
 
 	def _install_desktop_file(self):

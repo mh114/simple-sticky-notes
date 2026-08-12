@@ -18,6 +18,7 @@ This app was partially inspired by [**Linux Mint** Sticky](https://github.com/li
 	- I ran into issues with note/window positioning on **Wayland** and ultimately ended up side-stepping the issue by running in **XWayland** 🫣
 	- I _have_ some ideas on how to realise native Wayland support, but it remains to be seen if I can be bothered to try them.. 🤔
 	- Also needs a _KDE Window Rule_ to avoid stickies from showing up in taskbar / task switcher (→ see [installation notes below](#kde-window-rule-or-how-to-avoid-stickies-being-all-over-the-taskbar); the app can do this automatically or user can configure the rule manually)
+- Notes are automatically backed up on app startup (10 most recent backups are kept)
 - Written in **Python** using **PySide6**/**Qt**
 
 
@@ -96,10 +97,10 @@ List of potential changes to be made, or features to be added. No guarantees, th
 - [ ] Write about making a `.desktop`-file
 - [ ] Periodic autosave?
 	- Or trigger save after typing / making changes (with some delay)
-	- [ ] Make backup of notes at startup
-	- [x] **DONE:** Need to detect if notes are "dirty", prevent excess saving if nothing has changed
 - [ ] Maybe detect URLs from notes and make them clickable
 - [ ] Sets/groups of notes, one active at a time
+- [x] **DONE:** Make backup of notes at startup
+- [x] **DONE:** Need to detect if notes are "dirty", prevent excess saving if nothing has changed
 - [x] **DONE:** Note scrollbar should be styled to look nicer
 - [x] **DONE:** Note text format menu should be styled to look nicer (custom style applied when ran inside `.venv`)
 - [x] **DONE:** Better icon for resize-handle
