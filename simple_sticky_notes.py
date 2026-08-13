@@ -64,7 +64,7 @@ class SimpleStickyNotes(NotesProtocol):
 			QTimer.singleShot(0, lambda: KWinWindowRules.check_kwin_window_rules(APP_DISPLAY_NAME, self))
 
 		#icon = QIcon.fromTheme("note-new")
-		icon = IconCache.load_icon_svg("stickies.svg", size=QSize(64,64), scale=0.9, color=Qt.GlobalColor.white)
+		icon = IconCache.load_icon_svg("icon-mh.svg", size=QSize(64,64), scale=1.0)
 		self.app.setWindowIcon(icon)
 
 		self.setup_fonts()
@@ -448,7 +448,7 @@ GenericName=Sticky notes application
 Comment={APP_DESCRIPTION}
 Exec={python} {main_script_path}
 Path={app_path}
-Icon={app_path / "assets" / "stickies.svg"}
+Icon={app_path / "assets" / "icon-mh.svg"}
 Terminal=false
 Categories=Utility;TextEditor;
 Keywords=sticky;note;notes;
