@@ -167,7 +167,13 @@ class SimpleStickyNotes(NotesProtocol):
 
 
 	def on_about(self):
-		QMessageBox.about(None,
+		parent = None
+		if self.notes:
+			parent = self.notes[-1]
+			if not self._are_notes_visible:
+				self.set_notes_visible(True)
+
+		QMessageBox.about(parent,
 					APP_DISPLAY_NAME,
 					f"""
 					<b>{APP_DISPLAY_NAME}</b> — v{APP_VERSION}<br>
