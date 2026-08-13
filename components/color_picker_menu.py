@@ -70,6 +70,7 @@ class ColorPickerMenu(QMenu):
 
 
 	def _color_from_hue(hue: float) -> QColor:
+		# TODO: Could make at least saturation configurable here
 		return QColor.fromHsvF(hue, 0.55, 0.975)
 
 
