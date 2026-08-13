@@ -404,6 +404,9 @@ class SimpleStickyNotes(NotesProtocol):
 			return
 		
 		notes_path = Path(notes_file)
+		if not notes_path.exists():
+			return # Nothing to backup yet
+
 		num = 0
 		while num < num_backups:
 			num += 1
