@@ -84,7 +84,8 @@ class StickyNote(QWidget):
 		layout = QVBoxLayout(self)
 		layout.setContentsMargins(5, 5, 12, 12)
 
-		self.change_color(*ColorPickerMenu.default_color())
+		color_saturation = float(app.get_settings().value("notes/color_saturation", 0.55))
+		self.change_color(*ColorPickerMenu.default_color(color_saturation))
 		self.is_dirty = True
 
 		self.container = QWidget(self)
@@ -181,7 +182,7 @@ class StickyNote(QWidget):
 		color_button.setIcon(IconCache.load_icon_svg(color_icon_name, size=ICON_SIZE, opacity=ICON_OPACITY))
 		color_button.setIconSize(ICON_SIZE)
 		color_button.setFixedSize(TOOL_BUTTON_SIZE)
-		color_menu = ColorPickerMenu(parent = color_button)
+		color_menu = ColorPickerMenu(color_saturation, parent = color_button)
 		color_menu.color_picked.connect(self.change_color)
 		color_button.setMenu(color_menu)
 		self.color_menu = color_menu

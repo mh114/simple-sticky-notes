@@ -236,6 +236,7 @@ class SimpleStickyNotes(NotesProtocol):
 			self.settings.setValue("notes/num_backups", 10)
 			self.settings.setValue("notes/default_title", "Note")
 			self.settings.setValue("notes/color_icon_name", "droplet") # "droplet|paintbrush|brush|palette"
+			self.settings.setValue("notes/color_saturation", "0.55")
 			self.settings.setValue("notes/hide_on_startup", False)
 			self.settings.sync()
 

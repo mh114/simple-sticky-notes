@@ -17,13 +17,13 @@ class ColorPickerMenu(QMenu):
 	"""
 	color_picked = Signal(QColor, int)
 
-	def __init__(self, columns=4, parent=None):
+	def __init__(self, saturation: float, columns=4, parent=None):
 		super().__init__(parent)
 		self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
 		self.setStyleSheet("background-color: rgba(128, 128, 128, 0.6); border: 1px solid gray; border-radius: 8px;")
 
 		# Rainbow of colors
-		self.colors: list[QColor] = [ColorPickerMenu._color_from_hue(HUE_STEP * i) for i in range(NUM_COLORS)]
+		self.colors: list[QColor] = [ColorPickerMenu._color_from_hue(HUE_STEP * i, saturation) for i in range(NUM_COLORS)]
 		for c in [100, 150, 200, 250]: # Add some grays as well
 			self.colors.append(QColor(c, c, c))
 
@@ -69,14 +69,13 @@ class ColorPickerMenu(QMenu):
 		self.close()
 
 
-	def _color_from_hue(hue: float) -> QColor:
-		# TODO: Could make at least saturation configurable here
-		return QColor.fromHsvF(hue, 0.55, 0.975)
+	def _color_from_hue(hue: float, sat: float = 0.55) -> QColor:
+		return QColor.fromHsvF(hue, sat, 0.975)
 
 
 	def get_color_for_index(self, index: int) -> QColor:
 		return self.colors[index % len(self.colors)]
 
 
-	def default_color() -> tuple[QColor, int]:
-		return (ColorPickerMenu._color_from_hue(HUE_STEP * 2), 2)
+	def default_color(sat: float = 0.55) -> tuple[QColor, int]:
+		return (ColorPickerMenu._color_from_hue(HUE_STEP * 2, sat), 2)

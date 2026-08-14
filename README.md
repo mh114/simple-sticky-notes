@@ -96,6 +96,7 @@ After the first run, the configuration file is created at `~/.config/simple-stic
 ||`emoji_font_names`|`Noto Color Emoji, Segoe UI Emoji`| Comma-separated list of emoji font family names. Order matters, first found font is used. Note that Qt seems to have issues rendering some emoji fonts.|
 |**`[notes]`**|`num_backups`|`10`|How many automatic backups to keep. Set to `0` to disable the automatic backups on startup.|
 ||`default_note_title`|`Note`|Default title for new notes. Can be left empty.|
+||`color_saturation`|`0.55`|Color saturation value (0.0 - 1.0) for the sticky note color choices.|
 ||`color_icon_name`|`droplet`|Icon for the color picker: can be set to `brush`, `droplet`, `paintbrush` or `palette` for a different icon. (Only because I couldn't decide which icon is the best!)|
 ||`hide_on_startup`|`false`|Whether to hide notes on app startup. **NOTE:** Command-line argument `--stealth` or `-s` can also be used to force notes stay hidden, regardless of this setting.|
 
