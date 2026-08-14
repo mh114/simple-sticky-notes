@@ -36,7 +36,7 @@ APP_NAME = "SimpleStickyNotes"
 APP_DISPLAY_NAME = "(Simple) Sticky Notes"
 APP_DESCRIPTION = "A quite simple sticky notes application."
 APP_ORG = "MHGames"
-APP_VERSION = "0.1"
+APP_VERSION = "0.5.0"
 NOTES_FILENAME = "notes.json"
 SETTINGS_FILENAME = f"{APP_NAME_PATH}.conf"
 
@@ -446,7 +446,7 @@ class SimpleStickyNotes(NotesProtocol):
 
 		desktop_file.write_text(f"""[Desktop Entry]
 Type=Application
-Version={APP_VERSION}
+Version=1.5
 Name={APP_DISPLAY_NAME}
 GenericName=Sticky notes application
 Comment={APP_DESCRIPTION}
