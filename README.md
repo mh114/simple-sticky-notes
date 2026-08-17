@@ -103,12 +103,12 @@ After the first run, the configuration file is created at `~/.config/simple-stic
 
 ## TODO-list
 List of potential changes to be made, or features to be added. No guarantees, though.
-- [ ] Remove formatting when pasting text into notes
 - [ ] Periodic autosave?
 	- Or trigger save after typing / making changes (with some delay)
 - [ ] Maybe detect URLs from notes and make them clickable
 - [ ] Sets/groups of notes, one active at a time
 - [ ] Add a way to allow D-Bus signal/method to trigger _"toggle notes"_; could be used to add global shortcut
+- [x] **DONE:** Remove formatting when pasting text into notes
 - [x] **DONE:** Test whether "Force" is required for window rule, "Apply initially" seems to work fine
 	- Seems to work, although automatic window rule method still uses "Force" to have the effect immediately visible
 - [x] **DONE:** Write about making a `.desktop`-file

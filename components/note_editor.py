@@ -5,7 +5,7 @@
 import html
 import sys
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QMimeData, Qt
 from PySide6.QtGui import QFont, QKeyEvent, QTextCharFormat, QWheelEvent
 from PySide6.QtWidgets import QTextEdit
 
@@ -279,4 +279,15 @@ class NoteEditor(QTextEdit):
 		else:
 			# Apply text format for characters that are typed next
 			self.setCurrentCharFormat(format)
+
+
+	def insertFromMimeData(self, source: QMimeData):
+		if not source.hasText():
+			return
+		cursor = self.textCursor()
+		cursor.insertText(source.text())
+
+
+	def canInsertFromMimeData(self, source: QMimeData) -> bool:
+		return source.hasText()
 
