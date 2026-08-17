@@ -103,6 +103,7 @@ After the first run, the configuration file is created at `~/.config/simple-stic
 
 ## TODO-list
 List of potential changes to be made, or features to be added. No guarantees, though.
+- [ ] Remove formatting when pasting text into notes
 - [ ] Periodic autosave?
 	- Or trigger save after typing / making changes (with some delay)
 - [ ] Maybe detect URLs from notes and make them clickable
