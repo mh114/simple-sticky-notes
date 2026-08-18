@@ -36,7 +36,7 @@ APP_NAME = "SimpleStickyNotes"
 APP_DISPLAY_NAME = "(Simple) Sticky Notes"
 APP_DESCRIPTION = "A quite simple sticky notes application."
 APP_ORG = "MHGames"
-APP_VERSION = "0.5.0"
+APP_VERSION = "0.5.1"
 NOTES_FILENAME = "notes.json"
 SETTINGS_FILENAME = f"{APP_NAME_PATH}.conf"
 
