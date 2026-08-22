@@ -25,6 +25,7 @@ from PySide6.QtWidgets import QApplication, QMenu, QMessageBox, QSystemTrayIcon
 
 from components.icon_cache import IconCache
 from components.kwin_window_rules import KWinWindowRules
+from components.notes_dbus_interface import NotesDBusInterface
 from components.notes_protocol import NotesProtocol, PlatformType
 from components.sticky_note import StickyNote
 
@@ -36,7 +37,7 @@ APP_NAME = "SimpleStickyNotes"
 APP_DISPLAY_NAME = "(Simple) Sticky Notes"
 APP_DESCRIPTION = "A quite simple sticky notes application."
 APP_ORG = "MHGames"
-APP_VERSION = "0.5.1"
+APP_VERSION = "0.5.2"
 NOTES_FILENAME = "notes.json"
 SETTINGS_FILENAME = f"{APP_NAME_PATH}.conf"
 
@@ -48,6 +49,13 @@ class SimpleStickyNotes(NotesProtocol):
 
 	def __init__(self):
 		self.app = QApplication(sys.argv)
+
+		# Setup DBus interface first
+		if not self.setup_dbus_interface():
+			# We're already running -> exit
+			print("App already running, exiting..")
+			sys.exit(0)
+
 		self._platform_type = None
 		print(f"Running on {self.get_platform_type()}")
 
@@ -63,7 +71,6 @@ class SimpleStickyNotes(NotesProtocol):
 		if first_run or self.check_window_rule:
 			QTimer.singleShot(0, lambda: KWinWindowRules.check_kwin_window_rules(APP_DISPLAY_NAME, self))
 
-		#icon = QIcon.fromTheme("note-new")
 		icon = IconCache.load_icon_svg("icon-mh.svg", size=QSize(64,64), scale=1.0)
 		self.app.setWindowIcon(icon)
 
@@ -151,6 +158,15 @@ class SimpleStickyNotes(NotesProtocol):
 
 		if hide_on_startup_action.isChecked():
 			self.stealth_mode = True
+
+
+	def setup_dbus_interface(self) -> bool:
+		self.dbus_interface = NotesDBusInterface.create_dbus_interface(self)
+		if not self.dbus_interface:
+			return False
+		
+		QTimer.singleShot(0, self.dbus_interface.set_ready)
+		return True
 
 
 	def on_tray_activated(self, reason):

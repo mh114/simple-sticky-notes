@@ -101,14 +101,26 @@ After the first run, the configuration file is created at `~/.config/simple-stic
 ||`hide_on_startup`|`false`|Whether to hide notes on app startup. **NOTE:** Command-line argument `--stealth` or `-s` can also be used to force notes stay hidden, regardless of this setting.|
 
 
+## D-Bus -interface
+(Simple) Sticky Notes responds to certain **D-Bus** method calls. This can be used to set up global shortcuts to show, hide and/or toggle the notes from your desktop environment. 
+
+Available methods are: `toggleNotes`, `showNotes` and `hideNotes`. For example:
+```
+dbus-send --session --type=method_call --dest=org.mhgames.SimpleStickyNotes /SimpleStickyNotes org.mhgames.SimpleStickyNotes.toggleNotes
+
+# Or using qdbus:
+qdbus-qt6 org.mhgames.SimpleStickyNotes /SimpleStickyNotes toggleNotes
+```
+
+
 ## TODO-list
 List of potential changes to be made, or features to be added. No guarantees, though.
 - [ ] Sets/groups of notes, one active at a time
 - [ ] Maybe detect URLs from notes and make them clickable
-- [ ] Add a way to allow D-Bus signal/method to trigger _"toggle notes"_; could be used to add global shortcut
 - [ ] Periodic autosave?
 	- Or trigger save after typing / making changes (with some delay)
 - [ ] Option to hide formatting/color controls unless note is active or mouse is hovering over it?
+- [x] **DONE:** Add a way to allow D-Bus signal/method to trigger _"toggle notes"_; could be used to add global shortcut
 - [x] **DONE:** Remove formatting when pasting text into notes
 - [x] **DONE:** Test whether "Force" is required for window rule, "Apply initially" seems to work fine
 	- Seems to work, although automatic window rule method still uses "Force" to have the effect immediately visible
